@@ -41,7 +41,7 @@ jobs:
         issue-type: pull-request
         permission: write
         reaction-token: ${{ secrets.GITHUB_TOKEN }}
-        repository: pulumi/pulumi-provider-boilerplate
+        repository: pulumi-labs/pulumi-openai
         token: ${{ steps.esc-secrets.outputs.PULUMI_BOT_TOKEN }}
 name: command-dispatch
 on:

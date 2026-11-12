@@ -7,11 +7,24 @@ using System.Collections.Immutable;
 using System.Threading.Tasks;
 using Pulumi.Serialization;
 
-namespace Pulumi.ProviderBoilerplate
+namespace Pulumi.Openai
 {
-    [ProviderBoilerplateResourceType("pulumi:providers:provider-boilerplate")]
+    [OpenaiResourceType("pulumi:providers:openai")]
     public partial class Provider : global::Pulumi.ProviderResource
     {
+        /// <summary>
+        /// The OpenAI API key used to authenticate with the OpenAI API. Can also be set with the `OPENAI_API_KEY` environment variable.
+        /// </summary>
+        [Output("apiToken")]
+        public Output<string?> ApiToken { get; private set; } = null!;
+
+        /// <summary>
+        /// The base URL of the OpenAI API. Defaults to `https://api.openai.com/v1`. Can also be set with the `OPENAI_BASE_URL` environment variable.
+        /// </summary>
+        [Output("baseUrl")]
+        public Output<string?> BaseUrl { get; private set; } = null!;
+
+
         /// <summary>
         /// Create a Provider resource with the given unique name, arguments, and options.
         /// </summary>
@@ -20,7 +33,7 @@ namespace Pulumi.ProviderBoilerplate
         /// <param name="args">The arguments used to populate this resource's properties</param>
         /// <param name="options">A bag of options that control this resource's behavior</param>
         public Provider(string name, ProviderArgs? args = null, CustomResourceOptions? options = null)
-            : base("provider-boilerplate", name, args ?? new ProviderArgs(), MakeResourceOptions(options, ""))
+            : base("openai", name, args ?? new ProviderArgs(), MakeResourceOptions(options, ""))
         {
         }
 
@@ -29,6 +42,10 @@ namespace Pulumi.ProviderBoilerplate
             var defaultOptions = new CustomResourceOptions
             {
                 Version = Utilities.Version,
+                AdditionalSecretOutputs =
+                {
+                    "apiToken",
+                },
             };
             var merged = CustomResourceOptions.Merge(defaultOptions, options);
             // Override the ID if one was specified for consistency with other language SDKs.
@@ -39,11 +56,32 @@ namespace Pulumi.ProviderBoilerplate
 
     public sealed class ProviderArgs : global::Pulumi.ResourceArgs
     {
-        [Input("itsasecret", json: true)]
-        public Input<bool>? Itsasecret { get; set; }
+        [Input("apiToken")]
+        private Input<string>? _apiToken;
+
+        /// <summary>
+        /// The OpenAI API key used to authenticate with the OpenAI API. Can also be set with the `OPENAI_API_KEY` environment variable.
+        /// </summary>
+        public Input<string>? ApiToken
+        {
+            get => _apiToken;
+            set
+            {
+                var emptySecret = Output.CreateSecret(0);
+                _apiToken = Output.Tuple<Input<string>?, int>(value, emptySecret).Apply(t => t.Item1);
+            }
+        }
+
+        /// <summary>
+        /// The base URL of the OpenAI API. Defaults to `https://api.openai.com/v1`. Can also be set with the `OPENAI_BASE_URL` environment variable.
+        /// </summary>
+        [Input("baseUrl")]
+        public Input<string>? BaseUrl { get; set; }
 
         public ProviderArgs()
         {
+            ApiToken = Utilities.GetEnv("OPENAI_API_KEY");
+            BaseUrl = Utilities.GetEnv("OPENAI_BASE_URL");
         }
         public static new ProviderArgs Empty => new ProviderArgs();
     }

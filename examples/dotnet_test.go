@@ -12,8 +12,8 @@ import (
 
 func TestDotnet(t *testing.T) {
 	pt := pulumitest.NewPulumiTest(t, "dotnet",
-		opttest.DotNetReference("Pulumi.ProviderBoilerplate", "../sdk/dotnet"),
-		opttest.AttachProviderServer("provider-boilerplate", providerFactory),
+		opttest.DotNetReference("Pulumi.Openai", "../sdk/dotnet"),
+		opttest.AttachProviderServer("openai", providerFactory),
 	)
 
 	pt.Preview(t)

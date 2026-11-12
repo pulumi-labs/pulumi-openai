@@ -1,45 +1,22 @@
-PROJECT_NAME := Pulumi Provider Boilerplate
+PROJECT_NAME := Pulumi OpenAI Provider
 
-PACK             := provider-boilerplate
+PACK             := openai
 PACKDIR          := sdk
-PROJECT          := github.com/pulumi/pulumi-provider-boilerplate
-NODE_MODULE_NAME := @pulumi/boilerplate
-NUGET_PKG_NAME   := Pulumi.Boilerplate
+PROJECT          := github.com/pulumi-labs/pulumi-openai
+NODE_MODULE_NAME := @pulumi/openai
+NUGET_PKG_NAME   := Pulumi.Openai
 
 PROVIDER        := pulumi-resource-${PACK}
 PROVIDER_PATH   := provider
-VERSION_PATH    := ${PROVIDER_PATH}/version.Version
+VERSION_PATH    := ${PROVIDER_PATH}.Version
 
 PULUMI          := pulumi
 
-SCHEMA_FILE     := provider/cmd/pulumi-resource-provider-boilerplate/schema.json
+SCHEMA_FILE     := provider/cmd/pulumi-resource-openai/schema.json
 export GOPATH   := $(shell go env GOPATH)
 
 WORKING_DIR     := $(shell pwd)
 TESTPARALLELISM := 4
-
-prepare:
-	@if test -z "${NAME}"; then echo "NAME not set"; exit 1; fi
-	@if test -z "${REPOSITORY}"; then echo "REPOSITORY not set"; exit 1; fi
-	@if test -z "${ORG}"; then echo "ORG not set"; exit 1; fi
-	@if test ! -d "provider/cmd/pulumi-resource-provider-boilerplate"; then "Project already prepared"; exit 1; fi # SED_SKIP
-
-	# SED needs to not fail when encountering unicode characters
-	LC_CTYPE=C 
-	LANG=C
-
-	mv "provider/cmd/pulumi-resource-provider-boilerplate" provider/cmd/pulumi-resource-${NAME} # SED_SKIP
-	
-	# In MacOS the -i parameter needs an empty  to execute in place.
-	if [[ "${OS}" == "Darwin" ]]; then \
-		find . \( -path './.git' -o -path './sdk' \) -prune -o -not -name 'go.sum' -type f -exec sed -i '' '/SED_SKIP/!s,github.com/pulumi/pulumi-[x]yz,${REPOSITORY},g' {} \; ; \
-		find . \( -path './.git' -o -path './sdk' \) -prune -o -not -name 'go.sum' -type f -exec sed -i '' '/SED_SKIP/!s/[xX]yz/${NAME}/g' {} \; ; \
-		find . \( -path './.git' -o -path './sdk' \) -prune -o -not -name 'go.sum' -type f -exec sed -i '' '/SED_SKIP/!s/[aA]bc/${ORG}/g' {} \; ; \
-	else \
-		find . \( -path './.git' -o -path './sdk' \) -prune -o -not -name 'go.sum' -type f -exec sed -i '/SED_SKIP/!s,github.com/pulumi/pulumi-[x]yz,${REPOSITORY},g' {} \; ; \
-		find . \( -path './.git' -o -path './sdk' \) -prune -o -not -name 'go.sum' -type f -exec sed -i '/SED_SKIP/!s/[xX]yz/${NAME}/g' {} \; ; \
-		find . \( -path './.git' -o -path './sdk' \) -prune -o -not -name 'go.sum' -type f -exec sed -i '/SED_SKIP/!s/[aA]bc/${ORG}/g' {} \; ; \
-	fi
 
 # Override during CI using `make [TARGET] PROVIDER_VERSION=""` or by setting a PROVIDER_VERSION environment variable
 # Local & branch builds will just used this fixed default version unless specified
@@ -89,7 +66,7 @@ sdk/go: ${SCHEMA_FILE}
 	$(PULUMI) package gen-sdk --language go ${SCHEMA_FILE} --version "${VERSION_GENERIC}"
 	cp go.mod ${PACKDIR}/go/pulumi-${PACK}/go.mod
 	cd ${PACKDIR}/go/pulumi-${PACK} && \
-		go mod edit -module=github.com/pulumi/pulumi-${PACK}/${PACKDIR}/go/pulumi-${PACK} && \
+		go mod edit -module=github.com/pulumi-labs/pulumi-${PACK}/${PACKDIR}/go/pulumi-${PACK} && \
 		go mod tidy
 
 .PHONY: provider

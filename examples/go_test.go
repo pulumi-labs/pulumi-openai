@@ -17,10 +17,10 @@ func TestGoExampleLifecycle(t *testing.T) {
 	cwd, err := os.Getwd()
 	require.NoError(t, err)
 
-	module := filepath.Join(cwd, "../sdk/go/pulumi-provider-boilerplate")
+	module := filepath.Join(cwd, "../sdk/go/pulumi-openai")
 	pt := pulumitest.NewPulumiTest(t, "go",
-		opttest.GoModReplacement("github.com/pulumi/pulumi-provider-boilerplate/sdk/go/pulumi-provider-boilerplate", module),
-		opttest.AttachProviderServer("provider-boilerplate", providerFactory),
+		opttest.GoModReplacement("github.com/pulumi-labs/pulumi-openai/sdk/go/pulumi-openai", module),
+		opttest.AttachProviderServer("openai", providerFactory),
 		opttest.SkipInstall(),
 	)
 

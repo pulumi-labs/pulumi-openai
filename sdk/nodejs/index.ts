@@ -5,47 +5,59 @@ import * as pulumi from "@pulumi/pulumi";
 import * as utilities from "./utilities";
 
 // Export members:
+export { AgentArgs } from "./agent";
+export type Agent = import("./agent").Agent;
+export const Agent: typeof import("./agent").Agent = null as any;
+utilities.lazyLoad(exports, ["Agent"], () => require("./agent"));
+
+export { OneTimeAutomationArgs } from "./oneTimeAutomation";
+export type OneTimeAutomation = import("./oneTimeAutomation").OneTimeAutomation;
+export const OneTimeAutomation: typeof import("./oneTimeAutomation").OneTimeAutomation = null as any;
+utilities.lazyLoad(exports, ["OneTimeAutomation"], () => require("./oneTimeAutomation"));
+
+export { PeriodicAutomationArgs } from "./periodicAutomation";
+export type PeriodicAutomation = import("./periodicAutomation").PeriodicAutomation;
+export const PeriodicAutomation: typeof import("./periodicAutomation").PeriodicAutomation = null as any;
+utilities.lazyLoad(exports, ["PeriodicAutomation"], () => require("./periodicAutomation"));
+
 export { ProviderArgs } from "./provider";
 export type Provider = import("./provider").Provider;
 export const Provider: typeof import("./provider").Provider = null as any;
 utilities.lazyLoad(exports, ["Provider"], () => require("./provider"));
 
-export { RandomArgs } from "./random";
-export type Random = import("./random").Random;
-export const Random: typeof import("./random").Random = null as any;
-utilities.lazyLoad(exports, ["Random"], () => require("./random"));
 
-export { RandomComponentArgs } from "./randomComponent";
-export type RandomComponent = import("./randomComponent").RandomComponent;
-export const RandomComponent: typeof import("./randomComponent").RandomComponent = null as any;
-utilities.lazyLoad(exports, ["RandomComponent"], () => require("./randomComponent"));
-
+// Export enums:
+export * from "./types/enums";
 
 // Export sub-modules:
 import * as config from "./config";
+import * as types from "./types";
 
 export {
     config,
+    types,
 };
 
 const _module = {
     version: utilities.getVersion(),
     construct: (name: string, type: string, urn: string): pulumi.Resource => {
         switch (type) {
-            case "provider-boilerplate:index:Random":
-                return new Random(name, <any>undefined, { urn })
-            case "provider-boilerplate:index:RandomComponent":
-                return new RandomComponent(name, <any>undefined, { urn })
+            case "openai:index:Agent":
+                return new Agent(name, <any>undefined, { urn })
+            case "openai:index:OneTimeAutomation":
+                return new OneTimeAutomation(name, <any>undefined, { urn })
+            case "openai:index:PeriodicAutomation":
+                return new PeriodicAutomation(name, <any>undefined, { urn })
             default:
                 throw new Error(`unknown resource type ${type}`);
         }
     },
 };
-pulumi.runtime.registerResourceModule("provider-boilerplate", "index", _module)
-pulumi.runtime.registerResourcePackage("provider-boilerplate", {
+pulumi.runtime.registerResourceModule("openai", "index", _module)
+pulumi.runtime.registerResourcePackage("openai", {
     version: utilities.getVersion(),
     constructProvider: (name: string, type: string, urn: string): pulumi.ProviderResource => {
-        if (type !== "pulumi:providers:provider-boilerplate") {
+        if (type !== "pulumi:providers:openai") {
             throw new Error(`unknown provider type ${type}`);
         }
         return new Provider(name, <any>undefined, { urn });

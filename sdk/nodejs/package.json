@@ -1,7 +1,7 @@
 {
-    "name": "@pulumi/provider-boilerplate",
+    "name": "@pulumi/openai",
     "version": "1.0.0-alpha.0+dev",
-    "homepage": "https://www.pulumi.com",
+    "homepage": "https://www.pulumi.com/openai",
     "scripts": {
         "build": "tsc"
     },
@@ -14,7 +14,7 @@
     },
     "pulumi": {
         "resource": true,
-        "name": "provider-boilerplate",
+        "name": "openai",
         "version": "1.0.0-alpha.0+dev"
     }
 }

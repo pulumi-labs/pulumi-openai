@@ -1,113 +1,123 @@
-# Pulumi Native Provider Boilerplate
+# Pulumi OpenAI Provider
 
-This repository is a boilerplate showing how to create and locally test a native Pulumi provider (with examples of both CustomResource and ComponentResource [resource types](https://www.pulumi.com/docs/iac/concepts/resources/)). 
+A native Pulumi provider for managing [OpenAI](https://platform.openai.com) resources.
+It is built with [`pulumi-go-provider`](https://github.com/pulumi/pulumi-go-provider).
 
-## Authoring a Pulumi Native Provider
+> This provider is experimental. Its resources use OpenAI's beta Agents API.
 
-This boilerplate creates a working Pulumi-owned provider named `provider-boilerplate`.
-It implements a random number generator that you can [build and test out for yourself](#test-against-the-example) and then replace the Random code with code specific to your provider.
+## Resources
 
+| Resource | Description |
+|---|---|
+| `openai:index:Agent` | A reusable agent: a model with its instructions, tools and settings. |
+| `openai:index:PeriodicAutomation` | A schedule that runs an agent repeatedly, on a cron expression. |
+| `openai:index:OneTimeAutomation` | A schedule that runs an agent once, at a given time. |
 
-### Prerequisites
+## Configuration
 
-You will need to ensure the following tools are installed and present in your `$PATH`:
+| Key | Environment variable | Description |
+|---|---|---|
+| `openai:apiToken` | `OPENAI_API_KEY` | The OpenAI API key. Stored as a secret. |
+| `openai:baseUrl` | `OPENAI_BASE_URL` | The API base URL. Defaults to `https://api.openai.com/v1`. |
 
-* [`pulumictl`](https://github.com/pulumi/pulumictl#installation)
-* [Go 1.21](https://golang.org/dl/) or 1.latest
-* [NodeJS](https://nodejs.org/en/) 14.x.  We recommend using [nvm](https://github.com/nvm-sh/nvm) to manage NodeJS installations.
-* [Yarn](https://yarnpkg.com/)
-* [TypeScript](https://www.typescriptlang.org/)
-* [Python](https://www.python.org/downloads/) (called as `python3`).  For recent versions of MacOS, the system-installed version is fine.
-* [.NET](https://dotnet.microsoft.com/download)
+## Example
 
+```yaml
+name: my-agents
+runtime: yaml
 
-### Build & test the boilerplate provider
+resources:
+  supportAgent:
+    type: openai:Agent
+    properties:
+      model: gpt-5
+      name: support-agent
+      instructions: You answer customer questions about orders.
+      reasoning:
+        effort: low
+      tools:
+        - type: web_search
 
-1. Run `make build install` to build and install the provider.
-1. Run `make gen_examples` to generate the example programs in `examples/` off of the source `examples/yaml` example program.
-1. Run `make up` to run the example program in `examples/yaml`.
-1. Run `make down` to tear down the example program.
+  dailyDigest:
+    type: openai:PeriodicAutomation
+    properties:
+      name: daily-digest
+      expression: 0 9 * * 1-5
+      timezone: Europe/Amsterdam
+      target:
+        agentId: ${supportAgent.id}
+        environment:
+          type: none
+        input:
+          - content:
+              - type: input_text
+                text: Summarize yesterday's open orders.
 
-### Creating a new provider repository
-
-Pulumi offers this repository as a [GitHub template repository](https://docs.github.com/en/repositories/creating-and-managing-repositories/creating-a-repository-from-a-template) for convenience.  From this repository:
-
-1. Click "Use this template".
-1. Set the following options:
-   * Owner: pulumi 
-   * Repository name: pulumi-provider-boilerplate (replace "provider-boilerplate" with the name of your provider)
-   * Description: Pulumi provider for xyz
-   * Repository type: Public
-1. Clone the generated repository.
-
-From the templated repository:
-
-1. Run the following command to update files to use the name of your provider (third-party: use your GitHub organization/username):
-
-    ```bash
-    make prepare NAME=foo ORG=myorg REPOSITORY=github.com/myorg/pulumi-foo
-    ```
-
-   This will do the following:
-   - rename folders in `provider/cmd` to `pulumi-resource-{NAME}`
-   - replace dependencies in `provider/go.mod` to reflect your repository name
-   - find and replace all instances of `provider-boilerplate` with the `NAME` of your provider.
-   - find and replace all instances of the boilerplate `abc` with the `ORG` of your provider.
-   - replace all instances of the `github.com/pulumi/pulumi-provider-boilerplate` repository with the `REPOSITORY` location
-
-#### Build the provider and install the plugin
-
-   ```bash
-   $ make build install
-   ```
-   
-This will:
-
-1. Create the SDK codegen binary and place it in a `./bin` folder (gitignored)
-2. Create the provider binary and place it in the `./bin` folder (gitignored)
-3. Generate the dotnet, Go, Node, and Python SDKs and place them in the `./sdk` folder
-4. Install the provider on your machine.
-
-#### Test against the example
-   
-```bash
-$ cd examples/simple
-$ yarn link @pulumi/provider-boilerplate
-$ yarn install
-$ pulumi stack init test
-$ pulumi up
+outputs:
+  agentId: ${supportAgent.id}
 ```
 
-Now that you have completed all of the above steps, you have a working provider that generates a random string for you.
+The same program in TypeScript, Python, Go and C# is under [`examples/`](examples/).
 
-#### A brief repository overview
+Existing resources can be adopted with `pulumi import`:
 
-You now have:
+```bash
+pulumi import openai:index:Agent <name> <agent-id>
+pulumi import openai:index:PeriodicAutomation <name> <automation-id>
+pulumi import openai:index:OneTimeAutomation <name> <automation-id>
+```
 
-1. A `provider/` folder containing the building and implementation logic.
-    1. `cmd/pulumi-resource-provider-boilerplate/main.go` - holds the provider's sample implementation logic.
-2. `Makefile` - targets to help with building and publishing the provider. Run `make ci-mgmt` to regenerate CI workflows.
-3. `sdk` - holds the generated code libraries created by `pulumi gen-sdk`.
-4. `examples` a folder of Pulumi programs to try locally and/or use in CI.
-5. A `Makefile` and this `README`.
+The API has one automation object whose type is `periodic` or `once`. Each type is its own
+resource here, so import an automation with the resource that matches its type; the
+provider reports an error that names the right one otherwise.
 
-#### Additional Details
+## How the resources behave
 
-This repository depends on the pulumi-go-provider library. For more details on building providers, please check
-the [Pulumi Go Provider docs](https://github.com/pulumi/pulumi-go-provider).
+All resources:
 
-### Build Examples
+- `pulumi refresh` only refreshes the properties you set, so defaults filled in by the
+  API are not reported as changes.
+- A resource deleted outside Pulumi is detected on refresh and recreated on the next update.
 
-Create an example program using the resources defined in your provider, and place it in the `examples/` folder.
+`Agent`:
 
-You can now repeat the steps for [build, install, and test](#test-against-the-example).
+- Every property can be updated in place. Nothing forces a replacement.
+- Removing an optional property from your program resets it to the API default.
 
-## Configuring CI and releases
+`PeriodicAutomation` and `OneTimeAutomation`:
 
-1. Follow the instructions laid out in the [deployment templates](./deployment-templates/README-DEPLOYMENT.md).
+- Every property can be updated in place. Nothing forces a replacement.
+- Each run starts a new session of a saved agent, given by `target.agentId`. Two parts of
+  the API's target are not supported: configuring an agent inline, and the
+  `existing_session` target that notifies a session that already exists. An automation
+  that uses either cannot be imported.
+- The `runAt` of a `OneTimeAutomation` can only be changed until it has run.
+- The API never returns confidential values or uploaded content, so these are not
+  refreshed: environment `env`, `setupCommands`, inline file `data`, plugin and skill
+  `source`, and network `blockedDomains`.
+- Deleting an automation stops future runs. It does not delete sessions it started.
 
-## References
+## Developing
 
-Other resources/examples for implementing providers:
-* [Pulumi Command provider](https://github.com/pulumi/pulumi-command/blob/master/provider/pkg/provider/provider.go)
-* [Pulumi Go Provider repository](https://github.com/pulumi/pulumi-go-provider)
+Prerequisites: Go, the Pulumi CLI and `pulumictl`. The language SDK builds also need
+Node.js with Yarn, Python, .NET and Gradle.
+
+```bash
+make provider        # build bin/pulumi-resource-openai
+make test_provider   # run the provider unit tests against a fake API
+make codegen         # regenerate schema.json and the SDKs under sdk/
+make build           # build the provider and all SDKs
+```
+
+The provider code is in [`provider/`](provider/):
+
+- `provider.go` declares the provider, its configuration and its resources.
+- `agent.go` and `automation.go` implement the lifecycle of the resources: create, read,
+  update and delete. Both automation resources share the logic in `automation.go`.
+- `agent_types.go` and `automation_types.go` define their inputs.
+- `wire.go` converts between Pulumi inputs and API JSON.
+- `refresh.go` computes refreshed inputs from API responses.
+- `client.go` is the HTTP client for the OpenAI API.
+
+The tests under [`examples/`](examples/) run real Pulumi programs and create real agents and automations,
+so they need `OPENAI_API_KEY` to be set.

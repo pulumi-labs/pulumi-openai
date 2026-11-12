@@ -1,12 +1,30 @@
-import * as pulumi from "@pulumi/pulumi";
-import * as boilerplate from "@pulumi/provider-boilerplate";
+import * as openai from "@pulumi/openai";
 
-const myRandomResource = new boilerplate.Random("myRandomResource", {
-  length: 24,
+const supportAgent = new openai.Agent("supportAgent", {
+  model: "gpt-5",
+  name: "support-agent",
+  instructions: "You answer customer questions about orders.",
+  metadata: { "managed-by": "pulumi" },
+  reasoning: { effort: openai.ReasoningEffort.Low },
+  tools: [{ type: openai.ToolType.WebSearch }],
 });
-const myRandomComponent = new boilerplate.RandomComponent("myRandomComponent", {
-  length: 24,
+
+const dailyDigest = new openai.PeriodicAutomation("dailyDigest", {
+  name: "daily-digest",
+  expression: "0 9 * * 1-5",
+  timezone: "Europe/Amsterdam",
+  target: {
+    agentId: supportAgent.id,
+    environment: { type: openai.EnvironmentType.None },
+    input: [
+      {
+        content: [
+          { type: openai.InputContentType.InputText, text: "Summarize yesterday's open orders." },
+        ],
+      },
+    ],
+  },
 });
-export const output = {
-  value: myRandomResource.result,
-};
+
+export const agentId = supportAgent.id;
+export const automationStatus = dailyDigest.status;
