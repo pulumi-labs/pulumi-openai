@@ -4,7 +4,7 @@
 using System;
 using System.Collections.Immutable;
 
-namespace Pulumi.ProviderBoilerplate
+namespace Pulumi.Openai
 {
     public static class Config
     {
@@ -30,13 +30,26 @@ namespace Pulumi.ProviderBoilerplate
             }
         }
 
-        private static readonly global::Pulumi.Config __config = new global::Pulumi.Config("provider-boilerplate");
+        private static readonly global::Pulumi.Config __config = new global::Pulumi.Config("openai");
 
-        private static readonly __Value<bool?> _itsasecret = new __Value<bool?>(() => __config.GetBoolean("itsasecret"));
-        public static bool? Itsasecret
+        private static readonly __Value<string?> _apiToken = new __Value<string?>(() => __config.Get("apiToken") ?? Utilities.GetEnv("OPENAI_API_KEY"));
+        /// <summary>
+        /// The OpenAI API key used to authenticate with the OpenAI API. Can also be set with the `OPENAI_API_KEY` environment variable.
+        /// </summary>
+        public static string? ApiToken
         {
-            get => _itsasecret.Get();
-            set => _itsasecret.Set(value);
+            get => _apiToken.Get();
+            set => _apiToken.Set(value);
+        }
+
+        private static readonly __Value<string?> _baseUrl = new __Value<string?>(() => __config.Get("baseUrl") ?? Utilities.GetEnv("OPENAI_BASE_URL"));
+        /// <summary>
+        /// The base URL of the OpenAI API. Defaults to `https://api.openai.com/v1`. Can also be set with the `OPENAI_BASE_URL` environment variable.
+        /// </summary>
+        public static string? BaseUrl
+        {
+            get => _baseUrl.Get();
+            set => _baseUrl.Set(value);
         }
 
     }

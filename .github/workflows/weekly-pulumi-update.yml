@@ -6,7 +6,7 @@ on:
   - cron: 35 12 * * 4
   workflow_dispatch: {}
 env:
-  PROVIDER: provider-boilerplate
+  PROVIDER: openai
   TRAVIS_OS_NAME: linux
   GOVERSION: "1.21.x"
   NODEVERSION: "20.x"

@@ -28,41 +28,41 @@ import (
 	"github.com/pulumi/pulumi/sdk/v3/go/common/tokens"
 	"github.com/pulumi/pulumi/sdk/v3/go/property"
 
-	xyz "github.com/pulumi/pulumi-provider-boilerplate/provider"
+	openai "github.com/pulumi-labs/pulumi-openai/provider"
 )
 
-func TestRandomCreate(t *testing.T) {
+func TestAgentPreview(t *testing.T) {
 	t.Parallel()
 
 	prov := provider(t)
 
+	// A preview must succeed without credentials and without calling the API.
 	response, err := prov.Create(p.CreateRequest{
-		Urn: urn("Random"),
+		Urn: urn("Agent"),
 		Properties: property.NewMap(map[string]property.Value{
-			"length": property.New(12.0),
+			"model": property.New("gpt-test"),
+			"name":  property.New("my-agent"),
 		}),
-
-		DryRun: false,
+		DryRun: true,
 	})
 
 	require.NoError(t, err)
-	result := response.Properties.Get("result").AsString()
-	assert.Len(t, result, 12)
+	assert.Equal(t, "my-agent", response.Properties.Get("name").AsString())
 }
 
 // urn is a helper function to build an urn for running integration tests.
 func urn(typ string) resource.URN {
 	return resource.NewURN("stack", "proj", "",
-		tokens.Type("test:index:"+typ), "name")
+		tokens.Type("openai:index:"+typ), "name")
 }
 
 // Create a test server.
 func provider(t *testing.T) integration.Server {
 	s, err := integration.NewServer(
 		context.Background(),
-		xyz.Name,
+		openai.Name,
 		semver.MustParse("1.0.0"),
-		integration.WithProvider(xyz.Provider()),
+		integration.WithProvider(openai.Provider()),
 	)
 	require.NoError(t, err)
 	return s

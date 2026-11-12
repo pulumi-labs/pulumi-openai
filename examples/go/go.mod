@@ -1,11 +1,11 @@
-module github.com/pulumi/pulumi-provider-boilerplate/examples/go
+module github.com/pulumi-labs/pulumi-openai/examples/go
 
 go 1.25.11
 
-replace github.com/pulumi/pulumi-provider-boilerplate/sdk/go/pulumi-provider-boilerplate => ../../sdk/go/pulumi-provider-boilerplate
+replace github.com/pulumi-labs/pulumi-openai/sdk/go/pulumi-openai => ../../sdk/go/pulumi-openai
 
 require (
-	github.com/pulumi/pulumi-provider-boilerplate/sdk/go/pulumi-provider-boilerplate v0.0.175
+	github.com/pulumi-labs/pulumi-openai/sdk/go/pulumi-openai v0.0.0
 	github.com/pulumi/pulumi/sdk/v3 v3.259.0
 )
 

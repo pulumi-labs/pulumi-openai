@@ -1,16 +1,34 @@
-name: provider-boilerplate
+name: openai
 runtime: yaml
 
 resources:
-  myRandomResource:
-    type: provider-boilerplate:Random
+  supportAgent:
+    type: openai:Agent
     properties:
-      length: 24
-  myRandomComponent:
-    type: provider-boilerplate:RandomComponent
+      model: gpt-5
+      name: support-agent
+      instructions: You answer customer questions about orders.
+      metadata:
+        managed-by: pulumi
+      reasoning:
+        effort: low
+      tools:
+        - type: web_search
+  dailyDigest:
+    type: openai:PeriodicAutomation
     properties:
-      length: 24
+      name: daily-digest
+      expression: 0 9 * * 1-5
+      timezone: Europe/Amsterdam
+      target:
+        agentId: ${supportAgent.id}
+        environment:
+          type: none
+        input:
+          - content:
+              - type: input_text
+                text: Summarize yesterday's open orders.
 
 outputs:
-  output:
-    value: ${myRandomResource.result}
+  agentId: ${supportAgent.id}
+  automationStatus: ${dailyDigest.status}

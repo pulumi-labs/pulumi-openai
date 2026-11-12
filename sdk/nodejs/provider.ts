@@ -6,7 +6,7 @@ import * as utilities from "./utilities";
 
 export class Provider extends pulumi.ProviderResource {
     /** @internal */
-    public static readonly __pulumiType = 'provider-boilerplate';
+    public static readonly __pulumiType = 'openai';
 
     /**
      * Returns true if the given object is an instance of Provider.  This is designed to work even
@@ -19,6 +19,14 @@ export class Provider extends pulumi.ProviderResource {
         return obj['__pulumiType'] === "pulumi:providers:" + Provider.__pulumiType;
     }
 
+    /**
+     * The OpenAI API key used to authenticate with the OpenAI API. Can also be set with the `OPENAI_API_KEY` environment variable.
+     */
+    declare public readonly apiToken: pulumi.Output<string | undefined>;
+    /**
+     * The base URL of the OpenAI API. Defaults to `https://api.openai.com/v1`. Can also be set with the `OPENAI_BASE_URL` environment variable.
+     */
+    declare public readonly baseUrl: pulumi.Output<string | undefined>;
 
     /**
      * Create a Provider resource with the given unique name, arguments, and options.
@@ -31,9 +39,12 @@ export class Provider extends pulumi.ProviderResource {
         let resourceInputs: pulumi.Inputs = {};
         opts = opts || {};
         {
-            resourceInputs["itsasecret"] = pulumi.output(args?.itsasecret).apply(JSON.stringify);
+            resourceInputs["apiToken"] = (args?.apiToken ? pulumi.secret(args.apiToken) : undefined) ?? utilities.getEnv("OPENAI_API_KEY");
+            resourceInputs["baseUrl"] = (args?.baseUrl) ?? utilities.getEnv("OPENAI_BASE_URL");
         }
         opts = pulumi.mergeOptions(utilities.resourceOptsDefaults(), opts);
+        const secretOpts = { additionalSecretOutputs: ["apiToken"] };
+        opts = pulumi.mergeOptions(opts, secretOpts);
         super(Provider.__pulumiType, name, resourceInputs, opts);
     }
 }
@@ -42,5 +53,12 @@ export class Provider extends pulumi.ProviderResource {
  * The set of arguments for constructing a Provider resource.
  */
 export interface ProviderArgs {
-    itsasecret?: pulumi.Input<boolean | undefined>;
+    /**
+     * The OpenAI API key used to authenticate with the OpenAI API. Can also be set with the `OPENAI_API_KEY` environment variable.
+     */
+    apiToken?: pulumi.Input<string | undefined>;
+    /**
+     * The base URL of the OpenAI API. Defaults to `https://api.openai.com/v1`. Can also be set with the `OPENAI_BASE_URL` environment variable.
+     */
+    baseUrl?: pulumi.Input<string | undefined>;
 }

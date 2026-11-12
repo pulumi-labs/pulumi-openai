@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// Package provider implements a simple random resource and component.
+// Package provider implements a Pulumi provider for OpenAI.
 package provider
 
 import (
@@ -27,18 +27,17 @@ import (
 var Version string
 
 // Name controls how this provider is referenced in package names and elsewhere.
-const Name string = "provider-boilerplate"
+const Name string = "openai"
 
 // Provider creates a new instance of the provider.
 func Provider() p.Provider {
 	p, err := infer.NewProviderBuilder().
-		WithDisplayName("pulumi-provider-boilerplate").
-		WithDescription("An example built with pulumi-go-provider.").
-		WithHomepage("https://www.pulumi.com").
+		WithDisplayName("pulumi-provider-openai").
+		WithDescription("A Pulumi provider for managing resources in OpenAI.").
+		WithHomepage("https://www.pulumi.com/openai").
 		WithNamespace("pulumi").
-		WithGoImportPath("github.com/pulumi/pulumi-provider-boilerplate/sdk/go/pulumi-provider-boilerplate").
-		WithResources(infer.Resource(Random{})).
-		WithComponents(infer.ComponentF(NewRandomComponent)).
+		WithGoImportPath("github.com/pulumi-labs/pulumi-openai/sdk/go/pulumi-openai").
+		WithResources(infer.Resource(Agent{}), infer.Resource(PeriodicAutomation{}), infer.Resource(OneTimeAutomation{})).
 		WithConfig(infer.Config(&Config{})).
 		WithModuleMap(map[tokens.ModuleName]tokens.ModuleName{
 			"provider": "index",
@@ -49,7 +48,18 @@ func Provider() p.Provider {
 	return p
 }
 
-// Config defines provider-level configuration
+// Config defines provider-level configuration.
 type Config struct {
-	Scream *bool `pulumi:"itsasecret,optional"`
+	ApiToken string `pulumi:"apiToken,optional" provider:"secret"` //nolint:revive // Matches the config key.
+	BaseURL  string `pulumi:"baseUrl,optional"`
+}
+
+// Annotate describes the provider configuration and sets its defaults.
+func (c *Config) Annotate(a infer.Annotator) {
+	a.Describe(&c.ApiToken, "The OpenAI API key used to authenticate with the OpenAI API. "+
+		"Can also be set with the `OPENAI_API_KEY` environment variable.")
+	a.SetDefault(&c.ApiToken, nil, "OPENAI_API_KEY")
+	a.Describe(&c.BaseURL, "The base URL of the OpenAI API. Defaults to `https://api.openai.com/v1`. "+
+		"Can also be set with the `OPENAI_BASE_URL` environment variable.")
+	a.SetDefault(&c.BaseURL, nil, "OPENAI_BASE_URL")
 }

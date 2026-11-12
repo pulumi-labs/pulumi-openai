@@ -1,5 +1,5 @@
 {
-  "name": "provider-boilerplate",
+  "name": "openai",
   "devDependencies": {
     "@types/node": "^20"
   },
