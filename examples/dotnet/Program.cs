@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 using Pulumi;
-using OpenAI = Pulumi.Openai;
+using OpenAI = Pulumi.Labs.Openai;
 
 return await Deployment.RunAsync(() =>
 {

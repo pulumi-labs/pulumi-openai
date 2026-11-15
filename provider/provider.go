@@ -29,14 +29,46 @@ var Version string
 // Name controls how this provider is referenced in package names and elsewhere.
 const Name string = "openai"
 
+// description is the summary of the provider shown in the schema and the package registries.
+const description = "A Pulumi provider for managing resources in OpenAI."
+
 // Provider creates a new instance of the provider.
 func Provider() p.Provider {
 	p, err := infer.NewProviderBuilder().
 		WithDisplayName("pulumi-provider-openai").
-		WithDescription("A Pulumi provider for managing resources in OpenAI.").
+		WithDescription(description).
 		WithHomepage("https://www.pulumi.com/openai").
-		WithNamespace("pulumi").
-		WithGoImportPath("github.com/pulumi-labs/pulumi-openai/sdk/go/pulumi-openai").
+		WithRepository("https://github.com/pulumi-labs/pulumi-openai").
+		WithPublisher("Pulumi Labs").
+		WithLicense("Apache-2.0").
+		// The plugin is downloaded from this repository's GitHub Releases.
+		WithPluginDownloadURL("github://api.github.com/pulumi-labs/pulumi-openai").
+		// The SDKs are published under the Pulumi Labs name in each package registry.
+		WithLanguageMap(map[string]any{
+			"nodejs": map[string]any{
+				"packageName":          "@pulumi-labs/openai",
+				"packageDescription":   description,
+				"respectSchemaVersion": true,
+			},
+			"python": map[string]any{
+				"packageName":          "pulumi_labs_openai",
+				"respectSchemaVersion": true,
+				"pyproject":            map[string]any{"enabled": true},
+			},
+			"csharp": map[string]any{
+				"rootNamespace":        "Pulumi.Labs",
+				"respectSchemaVersion": true,
+			},
+			"java": map[string]any{
+				"basePackage":          "com.pulumi.labs",
+				"respectSchemaVersion": true,
+			},
+			"go": map[string]any{
+				"importBasePath":                 "github.com/pulumi-labs/pulumi-openai/sdk/go/pulumi-openai",
+				"generateResourceContainerTypes": true,
+				"respectSchemaVersion":           true,
+			},
+		}).
 		WithResources(infer.Resource(Agent{}), infer.Resource(PeriodicAutomation{}), infer.Resource(OneTimeAutomation{})).
 		WithConfig(infer.Config(&Config{})).
 		WithModuleMap(map[tokens.ModuleName]tokens.ModuleName{

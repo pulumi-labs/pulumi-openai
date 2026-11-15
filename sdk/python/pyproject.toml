@@ -1,12 +1,14 @@
 [project]
-  name = "pulumi_openai"
+  name = "pulumi_labs_openai"
   description = "A Pulumi provider for managing resources in OpenAI."
   dependencies = ["parver>=0.2.1", "pulumi>=3.231.0,<4.0.0", "semver>=2.8.1", "typing-extensions>=4.11,<5; python_version < \"3.11\""]
-  readme = "README.md"
+  readme = "pulumi_labs_openai/README.md"
   requires-python = ">=3.9"
-  version = "1.0.0a0+dev"
+  version = "0.0.1+dev"
+  license = "Apache-2.0"
   [project.urls]
     Homepage = "https://www.pulumi.com/openai"
+    Repository = "https://github.com/pulumi-labs/pulumi-openai"
 
 [build-system]
   requires = ["setuptools>=61.0"]
@@ -15,4 +17,4 @@
 [tool]
   [tool.setuptools]
     [tool.setuptools.package-data]
-      pulumi_openai = ["py.typed", "pulumi-plugin.json"]
+      pulumi_labs_openai = ["py.typed", "pulumi-plugin.json"]

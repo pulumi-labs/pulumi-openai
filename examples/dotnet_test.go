@@ -12,7 +12,7 @@ import (
 
 func TestDotnet(t *testing.T) {
 	pt := pulumitest.NewPulumiTest(t, "dotnet",
-		opttest.DotNetReference("Pulumi.Openai", "../sdk/dotnet"),
+		opttest.DotNetReference("Pulumi.Labs.Openai", "../sdk/dotnet"),
 		opttest.AttachProviderServer("openai", providerFactory),
 	)
 
