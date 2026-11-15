@@ -4,7 +4,7 @@
 using System;
 using System.Collections.Immutable;
 
-namespace Pulumi.Openai
+namespace Pulumi.Labs.Openai
 {
     public static class Config
     {

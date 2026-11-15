@@ -1,2 +1,2 @@
-pulumi_openai>=1.0.0
+pulumi_labs_openai
 pulumi>=3.0.0,<4.0.0

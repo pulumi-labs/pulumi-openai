@@ -1,5 +1,5 @@
 import pulumi
-import pulumi_openai as openai
+import pulumi_labs_openai as openai
 
 support_agent = openai.Agent(
     "supportAgent",

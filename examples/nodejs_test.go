@@ -12,7 +12,7 @@ import (
 
 func TestNodejsExampleLifecycle(t *testing.T) {
 	pt := pulumitest.NewPulumiTest(t, "nodejs",
-		opttest.YarnLink("@pulumi/openai"),
+		opttest.YarnLink("@pulumi-labs/openai"),
 		opttest.AttachProviderServer("openai", providerFactory),
 	)
 

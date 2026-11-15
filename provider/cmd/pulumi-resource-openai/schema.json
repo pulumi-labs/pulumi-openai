@@ -3,20 +3,31 @@
   "displayName": "pulumi-provider-openai",
   "description": "A Pulumi provider for managing resources in OpenAI.",
   "homepage": "https://www.pulumi.com/openai",
-  "namespace": "pulumi",
+  "license": "Apache-2.0",
+  "repository": "https://github.com/pulumi-labs/pulumi-openai",
+  "pluginDownloadURL": "github://api.github.com/pulumi-labs/pulumi-openai",
+  "publisher": "Pulumi Labs",
   "language": {
     "csharp": {
-      "respectSchemaVersion": true
+      "respectSchemaVersion": true,
+      "rootNamespace": "Pulumi.Labs"
     },
     "go": {
       "generateResourceContainerTypes": true,
       "importBasePath": "github.com/pulumi-labs/pulumi-openai/sdk/go/pulumi-openai",
       "respectSchemaVersion": true
     },
+    "java": {
+      "basePackage": "com.pulumi.labs",
+      "respectSchemaVersion": true
+    },
     "nodejs": {
+      "packageDescription": "A Pulumi provider for managing resources in OpenAI.",
+      "packageName": "@pulumi-labs/openai",
       "respectSchemaVersion": true
     },
     "python": {
+      "packageName": "pulumi_labs_openai",
       "pyproject": {
         "enabled": true
       },

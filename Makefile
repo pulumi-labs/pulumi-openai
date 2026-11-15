@@ -1,225 +1,242 @@
-PROJECT_NAME := Pulumi OpenAI Provider
+PROJECT_NAME := openai
+PROVIDER     := pulumi-resource-$(PROJECT_NAME)
+VERSION      ?= 0.0.1-dev
+PROVIDER_DIR := provider
+BIN_DIR      := bin
+SCHEMA_FILE  := $(PROVIDER_DIR)/cmd/$(PROVIDER)/schema.json
 
-PACK             := openai
-PACKDIR          := sdk
-PROJECT          := github.com/pulumi-labs/pulumi-openai
-NODE_MODULE_NAME := @pulumi/openai
-NUGET_PKG_NAME   := Pulumi.Openai
+MODULE      := github.com/pulumi-labs/pulumi-openai
+GO_SDK_DIR  := sdk/go/pulumi-$(PROJECT_NAME)
+PYTHON_PKG  := pulumi_labs_openai
+DOTNET_PROJ := sdk/dotnet/Pulumi.Labs.Openai.csproj
 
-PROVIDER        := pulumi-resource-${PACK}
-PROVIDER_PATH   := provider
-VERSION_PATH    := ${PROVIDER_PATH}.Version
+LDFLAGS := -X $(MODULE)/provider.Version=$(VERSION)
 
-PULUMI          := pulumi
+.PHONY: all provider schema test test_examples lint clean install \
+        nodejs_sdk python_sdk go_sdk dotnet_sdk java_sdk sdks \
+        build_nodejs_sdk build_python_sdk build_dotnet_sdk build_java_sdk \
+        set_version sdk_fixups
 
-SCHEMA_FILE     := provider/cmd/pulumi-resource-openai/schema.json
-export GOPATH   := $(shell go env GOPATH)
+all: provider
 
-WORKING_DIR     := $(shell pwd)
-TESTPARALLELISM := 4
+# Build the provider binary
+provider:
+	go build -ldflags "$(LDFLAGS)" -o $(BIN_DIR)/$(PROVIDER) ./$(PROVIDER_DIR)/cmd/$(PROVIDER)
 
-# Override during CI using `make [TARGET] PROVIDER_VERSION=""` or by setting a PROVIDER_VERSION environment variable
-# Local & branch builds will just used this fixed default version unless specified
-PROVIDER_VERSION ?= 1.0.0-alpha.0+dev
-# Use this normalised version everywhere rather than the raw input to ensure consistency.
-VERSION_GENERIC = $(shell pulumictl convert-version --language generic --version "$(PROVIDER_VERSION)")
-
-# Need to pick up locally pinned pulumi-langage-* plugins.
-export PULUMI_IGNORE_AMBIENT_PLUGINS = true
-
-ensure::
-	go mod tidy
-
-$(SCHEMA_FILE): provider
-	$(PULUMI) package get-schema $(WORKING_DIR)/bin/${PROVIDER} | \
-		jq 'del(.version)' > $(SCHEMA_FILE)
-
-# Codegen generates the schema file and *generates* all sdks. This is a local process and
-# does not require the ability to build all SDKs.
+# Generate the provider schema by querying the built provider plugin via the
+# Pulumi CLI.
 #
-# To build the SDKs, use `make build_sdks`
-#
-# Required by CI (weekly-pulumi-update)
-codegen: $(SCHEMA_FILE) sdk/dotnet sdk/go sdk/nodejs sdk/python sdk/java
+# The `version` field is stripped from the committed schema so it doesn't
+# churn on every release. Version is injected at SDK codegen time via the
+# `--version` flag on `pulumi package gen-sdk`.
+schema: provider
+	pulumi package get-schema ./$(BIN_DIR)/$(PROVIDER) | jq 'del(.version)' >$(SCHEMA_FILE)
 
-.PHONY: sdk/%
-sdk/%: $(SCHEMA_FILE)
-	rm -rf $@
-	$(PULUMI) package gen-sdk --language $* $(SCHEMA_FILE) --version "${VERSION_GENERIC}"
+# Run the unit tests. They run against a fake API and need no credentials.
+test:
+	go test -short -count=1 -race ./provider/... ./tests/...
 
-sdk/java: $(SCHEMA_FILE)
-	rm -rf $@
-	$(PULUMI) package gen-sdk --language java $(SCHEMA_FILE)
+# Run the example programs in every language. These create real agents and
+# automations, so they need OPENAI_API_KEY, the generated SDKs (`make sdks`,
+# then `make build_nodejs_sdk` and `yarn link` in sdk/nodejs for Node.js).
+test_examples:
+	cd examples && go test -v -count=1 -tags=all -timeout 2h ./...
 
-sdk/python: $(SCHEMA_FILE)
-	rm -rf $@
-	$(PULUMI) package gen-sdk --language python $(SCHEMA_FILE) --version "${VERSION_GENERIC}"
-	cp README.md ${PACKDIR}/python/
-
-sdk/dotnet: $(SCHEMA_FILE)
-	rm -rf $@
-	$(PULUMI) package gen-sdk --language dotnet $(SCHEMA_FILE) --version "${VERSION_GENERIC}"
-
-
-sdk/go: ${SCHEMA_FILE}
-	rm -rf $@
-	$(PULUMI) package gen-sdk --language go ${SCHEMA_FILE} --version "${VERSION_GENERIC}"
-	cp go.mod ${PACKDIR}/go/pulumi-${PACK}/go.mod
-	cd ${PACKDIR}/go/pulumi-${PACK} && \
-		go mod edit -module=github.com/pulumi-labs/pulumi-${PACK}/${PACKDIR}/go/pulumi-${PACK} && \
-		go mod tidy
-
-.PHONY: provider
-provider: bin/${PROVIDER} bin/pulumi-gen-${PACK} # Required by CI
-
-bin/${PROVIDER}:
-	cd provider && go build -o $(WORKING_DIR)/bin/${PROVIDER} -ldflags "-X ${PROJECT}/${VERSION_PATH}=${VERSION_GENERIC}" $(PROJECT)/${PROVIDER_PATH}/cmd/$(PROVIDER)
-
-.PHONY: provider_debug
-provider_debug:
-	(cd provider && go build -o $(WORKING_DIR)/bin/${PROVIDER} -gcflags="all=-N -l" -ldflags "-X ${PROJECT}/${VERSION_PATH}=${VERSION_GENERIC}" $(PROJECT)/${PROVIDER_PATH}/cmd/$(PROVIDER))
-
-test_provider:
-	cd provider && go test -short -v -count=1 -cover -timeout 2h -parallel ${TESTPARALLELISM} -coverprofile="coverage.txt" ./...
-
-dotnet_sdk: sdk/dotnet
-	cd ${PACKDIR}/dotnet/&& \
-		echo "${VERSION_GENERIC}" > version.txt && \
-		dotnet build
-
-go_sdk:	sdk/go
-
-nodejs_sdk: sdk/nodejs
-	cd ${PACKDIR}/nodejs/ && \
-		yarn install && \
-		yarn run tsc
-	cp README.md LICENSE ${PACKDIR}/nodejs/package.json ${PACKDIR}/nodejs/yarn.lock ${PACKDIR}/nodejs/bin/
-
-python_sdk: sdk/python
-	cp README.md ${PACKDIR}/python/
-	cd ${PACKDIR}/python/ && \
-		rm -rf ./bin/ ../python.bin/ && cp -R . ../python.bin && mv ../python.bin ./bin && \
-		python3 -m venv venv && \
-		./venv/bin/python -m pip install build && \
-		cd ./bin && \
-		../venv/bin/python -m build .
-
-java_sdk:: PACKAGE_VERSION := $(VERSION_GENERIC)
-java_sdk:: sdk/java
-	cd sdk/java/ && \
-		gradle --console=plain build
-
-.PHONY: build
-build:: provider build_sdks
-
-.PHONY: build_sdks
-build_sdks: dotnet_sdk go_sdk nodejs_sdk python_sdk java_sdk
-
-# Required for the codegen action that runs in pulumi/pulumi
-only_build:: build
-
+# Run linter
 lint:
 	golangci-lint --path-prefix provider --config .golangci.yml run --fix
 
+# Generate Node.js SDK
+nodejs_sdk: schema
+	rm -rf sdk/nodejs
+	pulumi package gen-sdk --language nodejs $(SCHEMA_FILE) --version $(VERSION)
 
-install:: install_nodejs_sdk install_dotnet_sdk
-	cp $(WORKING_DIR)/bin/${PROVIDER} ${GOPATH}/bin
+# Generate Python SDK
+python_sdk: schema
+	rm -rf sdk/python
+	pulumi package gen-sdk --language python $(SCHEMA_FILE) --version $(VERSION)
 
+# Generate Go SDK. The SDK is its own module; it reuses the root go.mod so its
+# dependencies stay pinned to the versions the provider is built with.
+go_sdk: schema
+	rm -rf sdk/go
+	pulumi package gen-sdk --language go $(SCHEMA_FILE) --version $(VERSION)
+	cp go.mod $(GO_SDK_DIR)/go.mod
+	cd $(GO_SDK_DIR) && go mod edit -module=$(MODULE)/$(GO_SDK_DIR) && go mod tidy
 
-GO_TEST := go test -v -count=1 -cover -timeout 2h -parallel ${TESTPARALLELISM}
+# Generate .NET SDK
+dotnet_sdk: schema
+	rm -rf sdk/dotnet
+	pulumi package gen-sdk --language dotnet $(SCHEMA_FILE) --version $(VERSION)
 
-test_all:: test
-	cd provider/pkg && $(GO_TEST) ./...
-	cd tests/sdk/nodejs && $(GO_TEST) ./...
-	cd tests/sdk/python && $(GO_TEST) ./...
-	cd tests/sdk/dotnet && $(GO_TEST) ./...
-	cd tests/sdk/go && $(GO_TEST) ./...
+# Generate Java SDK
+java_sdk: schema
+	rm -rf sdk/java
+	pulumi package gen-sdk --language java $(SCHEMA_FILE) --version $(VERSION)
 
-install_dotnet_sdk::
-	rm -rf $(WORKING_DIR)/nuget/$(NUGET_PKG_NAME).*.nupkg
-	mkdir -p $(WORKING_DIR)/nuget
-	find . -name '*.nupkg' -print -exec cp -p {} ${WORKING_DIR}/nuget \;
+# Generate all SDKs
+sdks: nodejs_sdk python_sdk go_sdk dotnet_sdk java_sdk sdk_fixups
 
-install_python_sdk::
-	#target intentionally blank
-
-install_go_sdk::
-	#target intentionally blank
-
-install_java_sdk::
-	#target intentionally blank
-
-install_nodejs_sdk::
-	-yarn unlink --cwd $(WORKING_DIR)/sdk/nodejs/bin
-	yarn link --cwd $(WORKING_DIR)/sdk/nodejs/bin
-
-test:: test_provider
-	cd examples && go test -v -tags=all -timeout 2h
-
-# Set these variables to enable signing of the windows binary with Azure Trusted Signing.
-AZURE_SIGNING_CLIENT_ID ?=
-AZURE_SIGNING_CLIENT_SECRET ?=
-AZURE_SIGNING_TENANT_ID ?=
-AZURE_SIGNING_ACCOUNT_ENDPOINT ?=
-AZURE_SIGNING_ACCOUNT_NAME ?=
-AZURE_SIGNING_CERT_PROFILE_NAME ?=
-SKIP_SIGNING ?=
-
-bin/jsign-7.4.jar:
-	mkdir -p bin
-	wget https://github.com/ebourg/jsign/releases/download/7.4/jsign-7.4.jar --output-document=bin/jsign-7.4.jar
-
-sign-goreleaser-exe-amd64: GORELEASER_ARCH := amd64_v1
-sign-goreleaser-exe-arm64: GORELEASER_ARCH := arm64
-
-# Set the shell to bash to allow for the use of bash syntax.
-sign-goreleaser-exe-%: SHELL:=/bin/bash
-sign-goreleaser-exe-%: bin/jsign-7.4.jar
-	SKIP_SIGNING=${SKIP_SIGNING} \
-	AZURE_SIGNING_CLIENT_ID=${AZURE_SIGNING_CLIENT_ID} \
-	AZURE_SIGNING_CLIENT_SECRET=${AZURE_SIGNING_CLIENT_SECRET} \
-	AZURE_SIGNING_TENANT_ID=${AZURE_SIGNING_TENANT_ID} \
-	AZURE_SIGNING_ACCOUNT_ENDPOINT=${AZURE_SIGNING_ACCOUNT_ENDPOINT} \
-	AZURE_SIGNING_ACCOUNT_NAME=${AZURE_SIGNING_ACCOUNT_NAME} \
-	AZURE_SIGNING_CERT_PROFILE_NAME=${AZURE_SIGNING_CERT_PROFILE_NAME} \
-	GORELEASER_ARCH=${GORELEASER_ARCH} \
-	CI=${CI} \
-		scripts/sign-windows-binary.sh
-
-# To make an immediately observable change to .ci-mgmt.yaml:
+# Re-apply tweaks that pulumi package gen-sdk does not (yet) emit:
+#   - Python: point readme at the package-local README and use the SPDX
+#     string-form license (the generator emits a deprecated [project.license]
+#     table that ships an empty PyPI long description and prints a warning).
+#     Also rewrite `pulumi.Input[Optional[T]]` -> `Optional[pulumi.Input[T]]`
+#     in the generated .py files: the codegen emits the inner-Optional
+#     nesting but the runtime's unwrap_type only recognizes the outer-Optional
+#     form, so passing a list/dict to an optional input asserts in
+#     _get_list_element_type. Tracked upstream at pulumi/pulumi#23414.
+#   - .NET: declare PackageReadmeFile and pack README.md so NuGet stops
+#     warning about a missing readme.
+#   - Java: the generator pins the Gradle compile toolchain to Java 11 and
+#     sets no release target. Gradle 9.x needs JVM 17+ to run and the CI
+#     runner provides a single JDK, so compile on JDK 17 but emit Java 11
+#     bytecode via `--release 11`, leaving SDK consumers on Java 11.
+#   - Node.js: the generated package.json has no main/types/files and there
+#     is no .npmignore, so npm falls back to .gitignore (which excludes
+#     bin/) and `npm publish` would ship uncompiled .ts with no entry
+#     point. Add main/types and a files allowlist pointing at bin/.
+#     Also rewrite the build script so it copies package.json into bin/
+#     after tsc; the gen-sdk utilities.ts does `require('./package.json')`
+#     to read the version, and that path resolves next to the compiled
+#     utilities.js at runtime.
+sdk_fixups:
+	@if [ -f sdk/python/pyproject.toml ]; then \
+		python3 -c 'import re,sys,pathlib; \
+p=pathlib.Path("sdk/python/pyproject.toml"); s=p.read_text(); \
+s=re.sub(r"^( *)readme = \"README\.md\"", "\\1readme = \"$(PYTHON_PKG)/README.md\"", s, flags=re.M); \
+s=re.sub(r"\n  \[project\.license\]\n    text = \"Apache-2\.0\"", "\n  license = \"Apache-2.0\"", s); \
+p.write_text(s)'; \
+	fi
+	@if [ -d sdk/python ]; then \
+		python3 scripts/fixup_python_input_optional.py sdk/python; \
+	fi
+	@if [ -d sdk/dotnet ] && [ -f README.md ] && [ ! -f sdk/dotnet/README.md ]; then \
+		cp README.md sdk/dotnet/README.md; \
+	fi
+	@if [ -f $(DOTNET_PROJ) ] && ! grep -q PackageReadmeFile $(DOTNET_PROJ); then \
+		sed -i.bak -E 's|(<PackageIcon>logo.png</PackageIcon>)|\1\n    <PackageReadmeFile>README.md</PackageReadmeFile>|' $(DOTNET_PROJ) && \
+		rm -f $(DOTNET_PROJ).bak; \
+	fi
+	@if [ -f $(DOTNET_PROJ) ] && ! grep -q '<None Include="README.md">' $(DOTNET_PROJ); then \
+		python3 -c 'import pathlib; \
+p=pathlib.Path("$(DOTNET_PROJ)"); s=p.read_text(); \
+needle="<None Include=\"logo.png\">\n      <Pack>True</Pack>\n      <PackagePath></PackagePath>\n    </None>"; \
+addition=needle + "\n    <None Include=\"README.md\">\n      <Pack>True</Pack>\n      <PackagePath></PackagePath>\n    </None>"; \
+p.write_text(s.replace(needle, addition, 1))'; \
+	fi
+# String surgery on the generated (do-not-edit) build.gradle:
+#   - bump the pinned compile toolchain from Java 11 to 17 (so Gradle,
+#     which needs JVM 17+, runs on the single JDK the runner provides)
+#     and add `options.release = 11` so emitted bytecode stays Java 11.
+#   - fill the POM <name> (pulumi-java-gen emits an empty `name = ""`
+#     unless Publisher == "pulumi", which would also clobber our
+#     com.pulumi.labs groupId; tracked upstream).
+	@if [ -f sdk/java/build.gradle ] && ! grep -q 'options.release = 11' sdk/java/build.gradle; then \
+		python3 -c 'import pathlib; \
+p=pathlib.Path("sdk/java/build.gradle"); s=p.read_text(); \
+s=s.replace("JavaLanguageVersion.of(11)", "JavaLanguageVersion.of(17)", 1); \
+s=s.replace("options.encoding = \"UTF-8\"", "options.encoding = \"UTF-8\"\n    options.release = 11", 1); \
+p.write_text(s)'; \
+	fi
+	@if [ -f sdk/java/build.gradle ] && grep -q 'name = ""' sdk/java/build.gradle; then \
+		python3 -c 'import pathlib; \
+p=pathlib.Path("sdk/java/build.gradle"); s=p.read_text(); \
+s=s.replace("name = \"\"", "name = \"pulumi-labs-$(PROJECT_NAME)\"", 1); \
+p.write_text(s)'; \
+	fi
+# The generated package.json has no main/types/files; with no .npmignore npm
+# falls back to .gitignore (which excludes bin/), so `npm publish` would ship
+# raw .ts with no entry point. Add main/types and a files allowlist so the
+# compiled bin/ is what gets published and imported.
 #
-# - Edit .ci-mgmt.yaml
-# - Run make ci-mgmt to apply the change locally.
-#
-ci-mgmt: .ci-mgmt.yaml
-	go run github.com/pulumi/ci-mgmt/provider-ci@master generate
-.PHONY: ci-mgmt
+# Also rewrite the build script. The generated utilities.ts reads its
+# version via `require('./package.json')`; tsc emits that line unchanged
+# into bin/utilities.js, which then resolves the require relative to
+# bin/. Without a bin/package.json the first SDK call throws
+# MODULE_NOT_FOUND. Copy package.json into bin/ after tsc so the require
+# resolves at runtime.
+	@if [ -f sdk/nodejs/package.json ] && ! grep -q '"main"' sdk/nodejs/package.json; then \
+		python3 -c 'import json,pathlib; \
+p=pathlib.Path("sdk/nodejs/package.json"); d=json.loads(p.read_text()); \
+d["main"]="bin/index.js"; d["types"]="bin/index.d.ts"; d["files"]=["bin/"]; \
+d.setdefault("scripts", {})["build"]="tsc && cp package.json bin/"; \
+p.write_text(json.dumps(d, indent=4)+"\n")'; \
+	fi
 
-.PHONY:local_generate
-local_generate: # Required by CI
+# Compile each SDK to catch generation breaks. These targets are best-effort:
+# they no-op if the corresponding toolchain is not installed locally.
+build_nodejs_sdk:
+	@if command -v npm >/dev/null 2>&1 && [ -d sdk/nodejs ]; then \
+		cd sdk/nodejs && npm install && npm run build; \
+	else \
+		echo "skipping nodejs SDK build (npm not installed or sdk/nodejs missing)"; \
+	fi
 
-.PHONY: generate_schema
-generate_schema: ${SCHEMA_PATH} # Required by CI
+build_python_sdk:
+	@if command -v python3 >/dev/null 2>&1 && [ -d sdk/python ]; then \
+		python3 -m venv $(BIN_DIR)/python-sdk-venv && \
+		$(BIN_DIR)/python-sdk-venv/bin/python -m pip install --quiet --upgrade pip build && \
+		cd sdk/python && $(CURDIR)/$(BIN_DIR)/python-sdk-venv/bin/python -m build --sdist --wheel --outdir dist/; \
+	else \
+		echo "skipping python SDK build (python3 not installed or sdk/python missing)"; \
+	fi
 
-.PHONY: build_go install_go_sdk
-generate_go: sdk/go # Required by CI
-build_go: # Required by CI
+build_dotnet_sdk:
+	@if command -v dotnet >/dev/null 2>&1 && [ -d sdk/dotnet ]; then \
+		cd sdk/dotnet && dotnet build; \
+	else \
+		echo "skipping dotnet SDK build (dotnet not installed or sdk/dotnet missing)"; \
+	fi
 
-.PHONY: build_java install_java_sdk
-generate_java: sdk/java # Required by CI
-build_java: java_sdk # Required by CI
+build_java_sdk:
+	@if command -v gradle >/dev/null 2>&1 && [ -d sdk/java ]; then \
+		cd sdk/java && gradle build; \
+	else \
+		echo "skipping java SDK build (gradle not installed or sdk/java missing)"; \
+	fi
 
-.PHONY: build_python install_python_sdk
-generate_python: sdk/python # Required by CI
-build_python: python_sdk # Required by CI
+# Substitute the release VERSION into language-SDK manifests.
+# Note: in the normal flow, `make sdks VERSION=$(VERSION)` already produces SDKs
+# with the right version baked in (the provider binary embeds VERSION via
+# ldflags, schema inherits it, SDK generators read it from the schema). This
+# target is a fallback for when SDKs have been generated with a placeholder
+# version (e.g., running `make sdks` without VERSION set, then publishing).
+set_version:
+	@if [ -f sdk/nodejs/package.json ]; then \
+		sed -i.bak -E 's/"version": "[^"]+"/"version": "$(VERSION)"/' sdk/nodejs/package.json && \
+		rm -f sdk/nodejs/package.json.bak; \
+	fi
+	@if [ -f sdk/python/pyproject.toml ]; then \
+		sed -i.bak -E 's/^( *version *= *)"[^"]+"/\1"$(VERSION)"/' sdk/python/pyproject.toml && \
+		rm -f sdk/python/pyproject.toml.bak; \
+	fi
+	@if [ -f $(DOTNET_PROJ) ]; then \
+		sed -i.bak -E 's|<Version>[^<]+</Version>|<Version>$(VERSION)</Version>|' $(DOTNET_PROJ) && \
+		rm -f $(DOTNET_PROJ).bak; \
+	fi
+	@if [ -f sdk/java/build.gradle ]; then \
+		sed -i.bak -E 's/version = "[^"]+"/version = "$(VERSION)"/' sdk/java/build.gradle && \
+		rm -f sdk/java/build.gradle.bak; \
+	fi
 
-.PHONY: build_nodejs install_nodejs_sdk
-generate_nodejs: sdk/nodejs # Required by CI
-build_nodejs: nodejs_sdk # Required by CI
+# Install the provider binary locally
+install: provider
+	cp $(BIN_DIR)/$(PROVIDER) $(shell go env GOPATH)/bin/
 
-.PHONY: build_dotnet install_dotnet_sdk
-generate_dotnet: sdk/dotnet # Required by CI
-build_dotnet: dotnet_sdk # Required by CI
+# Clean build artifacts
+clean:
+	rm -rf $(BIN_DIR) sdk/nodejs sdk/python sdk/go sdk/dotnet sdk/java
+	rm -f $(SCHEMA_FILE)
 
-bin/pulumi-gen-${PACK}: # Required by CI
-	touch bin/pulumi-gen-${PACK}
+# Verify every hand-written Go source carries the Apache 2.0 copyright
+# header. Generated trees (sdk/, schema.json) and examples are exempt by
+# convention. CI runs this; add headers with the block from any provider/
+# file when it fails.
+.PHONY: check_copyright
+check_copyright:
+	@missing=$$(find provider -name '*.go' | xargs grep -L "Copyright .*Pulumi Corporation"); \
+	if [ -n "$$missing" ]; then \
+		echo "missing copyright header:"; echo "$$missing"; exit 1; \
+	fi
+	@echo "copyright headers OK"

@@ -99,15 +99,19 @@ All resources:
 
 ## Developing
 
-Prerequisites: Go, the Pulumi CLI and `pulumictl`. The language SDK builds also need
-Node.js with Yarn, Python, .NET and Gradle.
+Prerequisites: Go, the Pulumi CLI and `jq`. The language SDK builds also need
+Node.js, Python, .NET and Gradle.
 
 ```bash
 make provider        # build bin/pulumi-resource-openai
-make test_provider   # run the provider unit tests against a fake API
-make codegen         # regenerate schema.json and the SDKs under sdk/
-make build           # build the provider and all SDKs
+make test            # run the provider unit tests against a fake API
+make schema          # regenerate schema.json
+make sdks            # regenerate schema.json and the SDKs under sdk/
+make build_nodejs_sdk build_python_sdk build_dotnet_sdk build_java_sdk   # compile the SDKs
 ```
+
+If you change the schema, run `make sdks` and commit the regenerated files. CI fails when
+the committed `schema.json` is out of date.
 
 The provider code is in [`provider/`](provider/):
 
@@ -120,4 +124,27 @@ The provider code is in [`provider/`](provider/):
 - `client.go` is the HTTP client for the OpenAI API.
 
 The tests under [`examples/`](examples/) run real Pulumi programs and create real agents and automations,
-so they need `OPENAI_API_KEY` to be set.
+so they need `OPENAI_API_KEY` to be set. Run them with `make test_examples`. CI does not run them.
+
+## Releasing
+
+Releases are tag-driven. Pushing a `v*.*.*` tag runs
+[`.github/workflows/release.yml`](.github/workflows/release.yml), which:
+
+1. Cross-compiles the provider for Linux, macOS and Windows.
+2. Generates the SDKs in all five languages with the version of the tag.
+3. Uploads the provider tarballs and SDK source archives to a GitHub Release. The
+   Pulumi CLI downloads the provider plugin from there.
+4. Publishes the SDKs:
+
+   | Language | Package | How |
+   | --- | --- | --- |
+   | Node.js | `@pulumi-labs/openai` on npm | Trusted publishing, `publish-npm` environment |
+   | Python | `pulumi_labs_openai` on PyPI | Trusted publishing, `publish-pypi` environment |
+   | .NET | `Pulumi.Labs.Openai` on NuGet | Trusted publishing, `publish-nuget` environment |
+   | Java | `com.pulumi.labs:openai` on Maven Central | Signing credentials from Pulumi ESC |
+   | Go | `github.com/pulumi-labs/pulumi-openai/sdk/go/pulumi-openai` | A `sdk/go/pulumi-openai/vX.Y.Z` tag |
+
+The NuGet and Maven Central jobs read their settings from the Pulumi ESC environment
+`github-secrets/pulumi-labs-pulumi-openai`. The workflows follow the structure of
+[pulumi-labs/pulumi-modal](https://github.com/pulumi-labs/pulumi-modal).

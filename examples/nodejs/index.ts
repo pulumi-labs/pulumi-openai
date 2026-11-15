@@ -1,4 +1,4 @@
-import * as openai from "@pulumi/openai";
+import * as openai from "@pulumi-labs/openai";
 
 const supportAgent = new openai.Agent("supportAgent", {
   model: "gpt-5.5",
