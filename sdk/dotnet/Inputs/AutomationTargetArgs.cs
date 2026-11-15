@@ -27,11 +27,11 @@ namespace Pulumi.Openai.Inputs
         [Input("environment", required: true)]
         public Input<Inputs.EnvironmentConfigArgs> Environment { get; set; } = null!;
 
-        [Input("input")]
+        [Input("input", required: true)]
         private InputList<Inputs.InputMessageArgs>? _input;
 
         /// <summary>
-        /// The initial user messages of each session.
+        /// The user messages that start each session. At least one message is required.
         /// </summary>
         public InputList<Inputs.InputMessageArgs> Input
         {

@@ -44,6 +44,13 @@ func (api *fakeAPI) handleAutomation(w http.ResponseWriter, r *http.Request, bod
 	id := strings.TrimPrefix(strings.TrimPrefix(r.URL.Path, "/v1/agents/automations"), "/")
 	switch {
 	case r.Method == http.MethodPost && id == "":
+		// The real API requires a new session to start with at least one message.
+		if target, _ := body["target"].(map[string]any); target["type"] == "new_session" {
+			if input, _ := target["input"].([]any); len(input) == 0 {
+				api.fail(w, http.StatusBadRequest, "Missing required parameter: 'target.input'.")
+				return
+			}
+		}
 		api.nextID++
 		automation := map[string]any{"metadata": map[string]any{}}
 		for k, v := range body {
@@ -173,6 +180,11 @@ func oneTimeInputs() map[string]any {
 		"target": map[string]any{
 			"agentId":     "agent_123",
 			"environment": map[string]any{"type": "none"},
+			"input": []any{
+				map[string]any{"content": []any{
+					map[string]any{"type": "input_text", "text": "Say hello."},
+				}},
+			},
 		},
 	}
 }
@@ -444,6 +456,11 @@ func TestAutomationRequiredInputs(t *testing.T) {
 	noAgent := periodicInputs()
 	delete(noAgent["target"].(map[string]any), "agentId")
 	assert.Equal(t, []string{"target"}, check(periodicToken, props(noAgent)))
+
+	// And so are the messages that start the session: the API rejects a target without them.
+	noInput := oneTimeInputs()
+	delete(noInput["target"].(map[string]any), "input")
+	assert.Equal(t, []string{"target"}, check(oneTimeToken, props(noInput)))
 
 	// The ID of an agent created in the same update is unknown during preview. That is
 	// not the same as missing.

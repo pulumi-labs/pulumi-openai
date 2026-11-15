@@ -1,7 +1,7 @@
 import * as openai from "@pulumi/openai";
 
 const supportAgent = new openai.Agent("supportAgent", {
-  model: "gpt-5",
+  model: "gpt-5.5",
   name: "support-agent",
   instructions: "You answer customer questions about orders.",
   metadata: { "managed-by": "pulumi" },

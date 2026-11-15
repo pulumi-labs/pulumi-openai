@@ -66,7 +66,7 @@ func (a *OneTimeAutomationArgs) Annotate(an infer.Annotator) {
 type AutomationTarget struct {
 	AgentID     string            `pulumi:"agentId"`
 	Environment EnvironmentConfig `pulumi:"environment"`
-	Input       []InputMessage    `pulumi:"input,optional"`
+	Input       []InputMessage    `pulumi:"input"`
 	Metadata    map[string]string `pulumi:"metadata,optional"`
 	VaultIDs    []string          `pulumi:"vaultIds,optional"`
 }
@@ -76,7 +76,7 @@ func (t *AutomationTarget) Annotate(an infer.Annotator) {
 	an.Describe(&t, "What an automation invocation does: it starts a new session of an agent.")
 	an.Describe(&t.AgentID, "The ID of the agent to run, such as the `id` of an `Agent` resource.")
 	an.Describe(&t.Environment, "The execution environment of each session.")
-	an.Describe(&t.Input, "The initial user messages of each session.")
+	an.Describe(&t.Input, "The user messages that start each session. At least one message is required.")
 	an.Describe(&t.Metadata, "Custom key-value pairs applied to each new session.")
 	an.Describe(&t.VaultIDs, "The IDs of vaults available to each session.")
 }

@@ -922,9 +922,9 @@ class AutomationTargetArgsDict(TypedDict):
     """
     The execution environment of each session.
     """
-    input: NotRequired[pulumi.Input[Optional[Sequence[pulumi.Input['InputMessageArgsDict']]]]]
+    input: pulumi.Input[Sequence[pulumi.Input['InputMessageArgsDict']]]
     """
-    The initial user messages of each session.
+    The user messages that start each session. At least one message is required.
     """
     metadata: NotRequired[pulumi.Input[Optional[Mapping[str, pulumi.Input[_builtins.str]]]]]
     """
@@ -940,7 +940,7 @@ class AutomationTargetArgs:
     def __init__(__self__, *,
                  agent_id: pulumi.Input[_builtins.str],
                  environment: pulumi.Input['EnvironmentConfigArgs'],
-                 input: pulumi.Input[Optional[Sequence[pulumi.Input['InputMessageArgs']]]] = None,
+                 input: pulumi.Input[Sequence[pulumi.Input['InputMessageArgs']]],
                  metadata: pulumi.Input[Optional[Mapping[str, pulumi.Input[_builtins.str]]]] = None,
                  vault_ids: pulumi.Input[Optional[Sequence[pulumi.Input[_builtins.str]]]] = None):
         """
@@ -948,14 +948,13 @@ class AutomationTargetArgs:
 
         :param pulumi.Input[_builtins.str] agent_id: The ID of the agent to run, such as the `id` of an `Agent` resource.
         :param pulumi.Input['EnvironmentConfigArgs'] environment: The execution environment of each session.
-        :param pulumi.Input[Sequence[pulumi.Input['InputMessageArgs']]] input: The initial user messages of each session.
+        :param pulumi.Input[Sequence[pulumi.Input['InputMessageArgs']]] input: The user messages that start each session. At least one message is required.
         :param pulumi.Input[Mapping[str, pulumi.Input[_builtins.str]]] metadata: Custom key-value pairs applied to each new session.
         :param pulumi.Input[Sequence[pulumi.Input[_builtins.str]]] vault_ids: The IDs of vaults available to each session.
         """
         pulumi.set(__self__, "agent_id", agent_id)
         pulumi.set(__self__, "environment", environment)
-        if input is not None:
-            pulumi.set(__self__, "input", input)
+        pulumi.set(__self__, "input", input)
         if metadata is not None:
             pulumi.set(__self__, "metadata", metadata)
         if vault_ids is not None:
@@ -987,14 +986,14 @@ class AutomationTargetArgs:
 
     @_builtins.property
     @pulumi.getter
-    def input(self) -> pulumi.Input[Optional[Sequence[pulumi.Input['InputMessageArgs']]]]:
+    def input(self) -> pulumi.Input[Sequence[pulumi.Input['InputMessageArgs']]]:
         """
-        The initial user messages of each session.
+        The user messages that start each session. At least one message is required.
         """
         return pulumi.get(self, "input")
 
     @input.setter
-    def input(self, value: pulumi.Input[Optional[Sequence[pulumi.Input['InputMessageArgs']]]]):
+    def input(self, value: pulumi.Input[Sequence[pulumi.Input['InputMessageArgs']]]):
         pulumi.set(self, "input", value)
 
     @_builtins.property

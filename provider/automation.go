@@ -385,10 +385,6 @@ func automationPayload(inputs any) map[string]any {
 	}
 	target["type"] = newSessionTarget
 	completeSessionFields(target)
-	if target["input"] == nil {
-		// `input` is required for this target, even when empty.
-		target["input"] = []any{}
-	}
 	return payload
 }
 

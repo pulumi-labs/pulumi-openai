@@ -55,18 +55,18 @@ public final class AutomationTargetArgs extends com.pulumi.resources.ResourceArg
     }
 
     /**
-     * The initial user messages of each session.
+     * The user messages that start each session. At least one message is required.
      * 
      */
-    @Import(name="input")
-    private @Nullable Output<List<InputMessageArgs>> input;
+    @Import(name="input", required=true)
+    private Output<List<InputMessageArgs>> input;
 
     /**
-     * @return The initial user messages of each session.
+     * @return The user messages that start each session. At least one message is required.
      * 
      */
-    public Optional<Output<List<InputMessageArgs>>> input() {
-        return Optional.ofNullable(this.input);
+    public Output<List<InputMessageArgs>> input() {
+        return this.input;
     }
 
     /**
@@ -170,18 +170,18 @@ public final class AutomationTargetArgs extends com.pulumi.resources.ResourceArg
         }
 
         /**
-         * @param input The initial user messages of each session.
+         * @param input The user messages that start each session. At least one message is required.
          * 
          * @return builder
          * 
          */
-        public Builder input(@Nullable Output<List<InputMessageArgs>> input) {
+        public Builder input(Output<List<InputMessageArgs>> input) {
             $.input = input;
             return this;
         }
 
         /**
-         * @param input The initial user messages of each session.
+         * @param input The user messages that start each session. At least one message is required.
          * 
          * @return builder
          * 
@@ -191,7 +191,7 @@ public final class AutomationTargetArgs extends com.pulumi.resources.ResourceArg
         }
 
         /**
-         * @param input The initial user messages of each session.
+         * @param input The user messages that start each session. At least one message is required.
          * 
          * @return builder
          * 
@@ -258,6 +258,9 @@ public final class AutomationTargetArgs extends com.pulumi.resources.ResourceArg
             }
             if ($.environment == null) {
                 throw new MissingRequiredPropertyException("AutomationTargetArgs", "environment");
+            }
+            if ($.input == null) {
+                throw new MissingRequiredPropertyException("AutomationTargetArgs", "input");
             }
             return $;
         }

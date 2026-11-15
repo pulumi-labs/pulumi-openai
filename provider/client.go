@@ -22,6 +22,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"os"
 	"strings"
 	"time"
 
@@ -32,6 +33,10 @@ const (
 	defaultBaseURL = "https://api.openai.com/v1"
 	// agentsBetaHeader opts in to the beta Agents API.
 	agentsBetaHeader = "agents=v1"
+
+	// The environment variables that the provider configuration falls back to.
+	apiTokenEnv = "OPENAI_API_KEY"
+	baseURLEnv  = "OPENAI_BASE_URL"
 )
 
 // client is a minimal client for the OpenAI REST API.
@@ -42,19 +47,31 @@ type client struct {
 }
 
 // newClient builds a client from the provider configuration.
+//
+// The environment variables are read here as well as being schema defaults. The engine
+// applies schema defaults only when it checks the provider's configuration, and it does
+// not always do that: a default provider that `pulumi import` recorded in the state is
+// configured from its stored, unchecked inputs on the next import.
 func newClient(ctx context.Context) (*client, error) {
 	cfg := infer.GetConfig[Config](ctx)
-	if cfg.ApiToken == "" {
+	token := cfg.ApiToken
+	if token == "" {
+		token = os.Getenv(apiTokenEnv)
+	}
+	if token == "" {
 		return nil, errors.New("no OpenAI API token configured: " +
-			"set `openai:apiToken` or the OPENAI_API_KEY environment variable")
+			"set `openai:apiToken` or the " + apiTokenEnv + " environment variable")
 	}
 	baseURL := cfg.BaseURL
+	if baseURL == "" {
+		baseURL = os.Getenv(baseURLEnv)
+	}
 	if baseURL == "" {
 		baseURL = defaultBaseURL
 	}
 	return &client{
 		baseURL: strings.TrimRight(baseURL, "/"),
-		token:   cfg.ApiToken,
+		token:   token,
 		http:    &http.Client{Timeout: 2 * time.Minute},
 	}, nil
 }

@@ -3,7 +3,7 @@ import pulumi_openai as openai
 
 support_agent = openai.Agent(
     "supportAgent",
-    model="gpt-5",
+    model="gpt-5.5",
     name="support-agent",
     instructions="You answer customer questions about orders.",
     metadata={"managed-by": "pulumi"},

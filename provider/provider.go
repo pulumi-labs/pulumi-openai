@@ -58,8 +58,8 @@ type Config struct {
 func (c *Config) Annotate(a infer.Annotator) {
 	a.Describe(&c.ApiToken, "The OpenAI API key used to authenticate with the OpenAI API. "+
 		"Can also be set with the `OPENAI_API_KEY` environment variable.")
-	a.SetDefault(&c.ApiToken, nil, "OPENAI_API_KEY")
+	a.SetDefault(&c.ApiToken, nil, apiTokenEnv)
 	a.Describe(&c.BaseURL, "The base URL of the OpenAI API. Defaults to `https://api.openai.com/v1`. "+
 		"Can also be set with the `OPENAI_BASE_URL` environment variable.")
-	a.SetDefault(&c.BaseURL, nil, "OPENAI_BASE_URL")
+	a.SetDefault(&c.BaseURL, nil, baseURLEnv)
 }

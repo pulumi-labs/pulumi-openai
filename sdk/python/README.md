@@ -30,7 +30,7 @@ resources:
   supportAgent:
     type: openai:Agent
     properties:
-      model: gpt-5
+      model: gpt-5.5
       name: support-agent
       instructions: You answer customer questions about orders.
       reasoning:

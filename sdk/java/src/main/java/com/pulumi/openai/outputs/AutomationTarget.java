@@ -26,10 +26,10 @@ public final class AutomationTarget {
      */
     private EnvironmentConfig environment;
     /**
-     * @return The initial user messages of each session.
+     * @return The user messages that start each session. At least one message is required.
      * 
      */
-    private @Nullable List<InputMessage> input;
+    private List<InputMessage> input;
     /**
      * @return Custom key-value pairs applied to each new session.
      * 
@@ -57,11 +57,11 @@ public final class AutomationTarget {
         return this.environment;
     }
     /**
-     * @return The initial user messages of each session.
+     * @return The user messages that start each session. At least one message is required.
      * 
      */
     public List<InputMessage> input() {
-        return this.input == null ? List.of() : this.input;
+        return this.input;
     }
     /**
      * @return Custom key-value pairs applied to each new session.
@@ -89,7 +89,7 @@ public final class AutomationTarget {
     public static final class Builder {
         private String agentId;
         private EnvironmentConfig environment;
-        private @Nullable List<InputMessage> input;
+        private List<InputMessage> input;
         private @Nullable Map<String,String> metadata;
         private @Nullable List<String> vaultIds;
         public Builder() {}
@@ -119,8 +119,10 @@ public final class AutomationTarget {
             return this;
         }
         @CustomType.Setter
-        public Builder input(@Nullable List<InputMessage> input) {
-
+        public Builder input(List<InputMessage> input) {
+            if (input == null) {
+              throw new MissingRequiredPropertyException("AutomationTarget", "input");
+            }
             this.input = input;
             return this;
         }

@@ -25,7 +25,7 @@ namespace Pulumi.Openai.Outputs
         /// </summary>
         public readonly Outputs.EnvironmentConfig Environment;
         /// <summary>
-        /// The initial user messages of each session.
+        /// The user messages that start each session. At least one message is required.
         /// </summary>
         public readonly ImmutableArray<Outputs.InputMessage> Input;
         /// <summary>

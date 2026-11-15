@@ -8,7 +8,7 @@ import (
 func main() {
 	pulumi.Run(func(ctx *pulumi.Context) error {
 		supportAgent, err := openai.NewAgent(ctx, "supportAgent", &openai.AgentArgs{
-			Model:        pulumi.String("gpt-5"),
+			Model:        pulumi.String("gpt-5.5"),
 			Name:         pulumi.String("support-agent"),
 			Instructions: pulumi.String("You answer customer questions about orders."),
 			Metadata:     pulumi.StringMap{"managed-by": pulumi.String("pulumi")},
