@@ -6,7 +6,7 @@ return await Deployment.RunAsync(() =>
 {
     var supportAgent = new OpenAI.Agent("supportAgent", new()
     {
-        Model = "gpt-5",
+        Model = "gpt-5.5",
         Name = "support-agent",
         Instructions = "You answer customer questions about orders.",
         Metadata = { { "managed-by", "pulumi" } },

@@ -477,6 +477,7 @@ func TestAgentAPIErrorIsReported(t *testing.T) {
 
 func TestMissingAPITokenIsReported(t *testing.T) {
 	t.Setenv("OPENAI_API_KEY", "")
+	t.Setenv("OPENAI_BASE_URL", "http://127.0.0.1:1")
 	server, err := integration.NewServer(t.Context(), Name, semver.Version{Minor: 1},
 		integration.WithProvider(Provider()))
 	require.NoError(t, err)
@@ -485,6 +486,24 @@ func TestMissingAPITokenIsReported(t *testing.T) {
 	_, err = server.Create(p.CreateRequest{Urn: agentURN(), Properties: props(map[string]any{"model": "gpt-test"})})
 	require.Error(t, err)
 	assert.Contains(t, err.Error(), "OPENAI_API_KEY")
+}
+
+// The engine does not always apply the schema defaults of the provider configuration, so
+// the environment is also read when a request is made.
+func TestEnvironmentConfiguresAnUncheckedProvider(t *testing.T) {
+	api := newFakeAPI(t)
+	t.Setenv("OPENAI_API_KEY", "test-token")
+	t.Setenv("OPENAI_BASE_URL", api.server.URL+"/v1")
+	server, err := integration.NewServer(t.Context(), Name, semver.Version{Minor: 1},
+		integration.WithProvider(Provider()))
+	require.NoError(t, err)
+	require.NoError(t, server.Configure(p.ConfigureRequest{}))
+
+	created, err := server.Create(p.CreateRequest{
+		Urn: agentURN(), Properties: props(map[string]any{"model": "gpt-test"}),
+	})
+	require.NoError(t, err)
+	assert.NotEmpty(t, created.ID)
 }
 
 func TestUpdatePayloadKeepsExperimentalSettings(t *testing.T) {

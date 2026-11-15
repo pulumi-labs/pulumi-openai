@@ -197,9 +197,9 @@ export interface AutomationTargetArgs {
      */
     environment: pulumi.Input<inputs.EnvironmentConfigArgs>;
     /**
-     * The initial user messages of each session.
+     * The user messages that start each session. At least one message is required.
      */
-    input?: pulumi.Input<pulumi.Input<inputs.InputMessageArgs>[] | undefined>;
+    input: pulumi.Input<pulumi.Input<inputs.InputMessageArgs>[]>;
     /**
      * Custom key-value pairs applied to each new session.
      */

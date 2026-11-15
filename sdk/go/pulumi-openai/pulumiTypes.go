@@ -1646,7 +1646,7 @@ type AutomationTarget struct {
 	AgentId string `pulumi:"agentId"`
 	// The execution environment of each session.
 	Environment EnvironmentConfig `pulumi:"environment"`
-	// The initial user messages of each session.
+	// The user messages that start each session. At least one message is required.
 	Input []InputMessage `pulumi:"input"`
 	// Custom key-value pairs applied to each new session.
 	Metadata map[string]string `pulumi:"metadata"`
@@ -1671,7 +1671,7 @@ type AutomationTargetArgs struct {
 	AgentId pulumi.StringInput `pulumi:"agentId"`
 	// The execution environment of each session.
 	Environment EnvironmentConfigInput `pulumi:"environment"`
-	// The initial user messages of each session.
+	// The user messages that start each session. At least one message is required.
 	Input InputMessageArrayInput `pulumi:"input"`
 	// Custom key-value pairs applied to each new session.
 	Metadata pulumi.StringMapInput `pulumi:"metadata"`
@@ -1716,7 +1716,7 @@ func (o AutomationTargetOutput) Environment() EnvironmentConfigOutput {
 	return o.ApplyT(func(v AutomationTarget) EnvironmentConfig { return v.Environment }).(EnvironmentConfigOutput)
 }
 
-// The initial user messages of each session.
+// The user messages that start each session. At least one message is required.
 func (o AutomationTargetOutput) Input() InputMessageArrayOutput {
 	return o.ApplyT(func(v AutomationTarget) []InputMessage { return v.Input }).(InputMessageArrayOutput)
 }

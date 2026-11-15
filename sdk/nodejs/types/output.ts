@@ -212,9 +212,9 @@ export interface AutomationTarget {
      */
     environment: outputs.EnvironmentConfig;
     /**
-     * The initial user messages of each session.
+     * The user messages that start each session. At least one message is required.
      */
-    input?: outputs.InputMessage[];
+    input: outputs.InputMessage[];
     /**
      * Custom key-value pairs applied to each new session.
      */

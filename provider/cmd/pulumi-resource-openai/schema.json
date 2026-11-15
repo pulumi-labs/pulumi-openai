@@ -321,7 +321,7 @@
           "items": {
             "$ref": "#/types/openai:index:InputMessage"
           },
-          "description": "The initial user messages of each session."
+          "description": "The user messages that start each session. At least one message is required."
         },
         "metadata": {
           "type": "object",
@@ -341,7 +341,8 @@
       "type": "object",
       "required": [
         "agentId",
-        "environment"
+        "environment",
+        "input"
       ]
     },
     "openai:index:ConnectionOrigin": {
