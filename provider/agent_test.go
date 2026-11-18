@@ -53,6 +53,9 @@ type fakeAPI struct {
 	mu          sync.Mutex
 	agents      map[string]map[string]any
 	automations map[string]map[string]any
+	vaults      map[string]map[string]any
+	credentials map[string]map[string]any
+	scripted    []scriptedResponse
 	requests    []recordedRequest
 	nextID      int
 	clock       int
@@ -105,7 +108,9 @@ func resolve(agent map[string]any) {
 
 func newFakeAPI(t *testing.T) *fakeAPI {
 	api := &fakeAPI{
-		t: t, agents: map[string]map[string]any{}, automations: map[string]map[string]any{}, clock: 1700000000,
+		t: t, clock: 1700000000,
+		agents: map[string]map[string]any{}, automations: map[string]map[string]any{},
+		vaults: map[string]map[string]any{}, credentials: map[string]map[string]any{},
 	}
 	api.server = httptest.NewServer(http.HandlerFunc(api.handle))
 	t.Cleanup(api.server.Close)
@@ -142,9 +147,21 @@ func (api *fakeAPI) handle(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	for i, scripted := range api.scripted {
+		if scripted.method == r.Method && scripted.path == r.URL.Path {
+			api.scripted = append(api.scripted[:i], api.scripted[i+1:]...)
+			api.fail(w, scripted.status, scripted.message)
+			return
+		}
+	}
+
 	api.clock++
 	if strings.HasPrefix(r.URL.Path, "/v1/agents/automations") {
 		api.handleAutomation(w, r, body)
+		return
+	}
+	if strings.HasPrefix(r.URL.Path, "/v1/vaults") {
+		api.handleVault(w, r, body)
 		return
 	}
 	id := strings.TrimPrefix(r.URL.Path, "/v1/agents/")
@@ -190,6 +207,34 @@ func (api *fakeAPI) handle(w http.ResponseWriter, r *http.Request) {
 	default:
 		api.fail(w, http.StatusMethodNotAllowed, "method not allowed")
 	}
+}
+
+// scriptedResponse is an error the fake API answers a request with once, in place of
+// handling it, to reproduce a race seen on the real API.
+type scriptedResponse struct {
+	method, path string
+	status       int
+	message      string
+}
+
+// script makes the fake API answer the next matching requests with the given errors.
+func (api *fakeAPI) script(responses ...scriptedResponse) {
+	api.mu.Lock()
+	defer api.mu.Unlock()
+	api.scripted = append(api.scripted, responses...)
+}
+
+// count returns how many requests had the given method and path.
+func (api *fakeAPI) count(method, path string) int {
+	api.mu.Lock()
+	defer api.mu.Unlock()
+	n := 0
+	for _, request := range api.requests {
+		if request.Method == method && request.Path == path {
+			n++
+		}
+	}
+	return n
 }
 
 func (api *fakeAPI) respond(w http.ResponseWriter, status int, v any) {

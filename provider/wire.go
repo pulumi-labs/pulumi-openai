@@ -127,6 +127,39 @@ func renameAPI(value any, t reflect.Type) any {
 	}
 }
 
+// propertyLeaves lists the set values of an input struct by property path, such as
+// `auth.refresh.clientId`, in their API form. Nested structs are walked; maps and lists
+// are leaves. Unset values are left out, as by toAPI.
+func propertyLeaves(inputs any) map[string]any {
+	leaves := map[string]any{}
+	var walk func(v reflect.Value, path string)
+	walk = func(v reflect.Value, path string) {
+		switch {
+		case v.Kind() == reflect.Pointer && v.Type().Elem().Kind() == reflect.Struct:
+			if !v.IsNil() {
+				walk(v.Elem(), path)
+			}
+		case v.Kind() == reflect.Struct:
+			for i := range v.NumField() {
+				name := pulumiName(v.Type().Field(i))
+				if name == "" {
+					continue
+				}
+				if path != "" {
+					name = path + "." + name
+				}
+				walk(v.Field(i), name)
+			}
+		default:
+			if value := encodeAPI(v); value != nil {
+				leaves[path] = value
+			}
+		}
+	}
+	walk(reflect.ValueOf(inputs), "")
+	return leaves
+}
+
 // pulumiName returns the Pulumi property name of a struct field, or "" if it has none.
 func pulumiName(field reflect.StructField) string {
 	name, _, _ := strings.Cut(field.Tag.Get("pulumi"), ",")

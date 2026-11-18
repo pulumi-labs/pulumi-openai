@@ -27,6 +27,10 @@ func (m *module) Construct(ctx *pulumi.Context, name, typ, urn string) (r pulumi
 		r = &OneTimeAutomation{}
 	case "openai:index:PeriodicAutomation":
 		r = &PeriodicAutomation{}
+	case "openai:index:Vault":
+		r = &Vault{}
+	case "openai:index:VaultCredential":
+		r = &VaultCredential{}
 	default:
 		return nil, fmt.Errorf("unknown resource type: %s", typ)
 	}

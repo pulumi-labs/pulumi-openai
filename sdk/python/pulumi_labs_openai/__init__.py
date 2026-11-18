@@ -11,6 +11,8 @@ from .agent import *
 from .one_time_automation import *
 from .periodic_automation import *
 from .provider import *
+from .vault import *
+from .vault_credential import *
 from ._inputs import *
 from . import outputs
 
@@ -31,7 +33,9 @@ _utilities.register(
   "classes": {
    "openai:index:Agent": "Agent",
    "openai:index:OneTimeAutomation": "OneTimeAutomation",
-   "openai:index:PeriodicAutomation": "PeriodicAutomation"
+   "openai:index:PeriodicAutomation": "PeriodicAutomation",
+   "openai:index:Vault": "Vault",
+   "openai:index:VaultCredential": "VaultCredential"
   }
  }
 ]

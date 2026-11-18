@@ -36,6 +36,14 @@ __all__ = [
     'AgentWebSearchLocationArgsDict',
     'AutomationTargetArgs',
     'AutomationTargetArgsDict',
+    'CredentialAuthArgs',
+    'CredentialAuthArgsDict',
+    'CredentialNetworkingArgs',
+    'CredentialNetworkingArgsDict',
+    'CredentialOAuthRefreshArgs',
+    'CredentialOAuthRefreshArgsDict',
+    'CredentialTokenEndpointAuthArgs',
+    'CredentialTokenEndpointAuthArgsDict',
     'EnvironmentConfigArgs',
     'EnvironmentConfigArgsDict',
     'EnvironmentDesktopArgs',
@@ -1019,6 +1027,420 @@ class AutomationTargetArgs:
     @vault_ids.setter
     def vault_ids(self, value: Optional[pulumi.Input[Sequence[pulumi.Input[_builtins.str]]]]):
         pulumi.set(self, "vault_ids", value)
+
+
+class CredentialAuthArgsDict(TypedDict):
+    """
+    How a credential authenticates. `type` selects the kind of credential; each other property applies only to the credential types named in its description. Secrets are write-only: the API never returns them, so they are not refreshed.
+    """
+    type: pulumi.Input['CredentialAuthType']
+    """
+    The kind of credential. It cannot be changed: changing it replaces the credential.
+    """
+    access_token: NotRequired[Optional[pulumi.Input[_builtins.str]]]
+    """
+    `mcp_oauth` credentials: the OAuth access token. Required. Changing it rotates the token in place.
+    """
+    expires_at: NotRequired[Optional[pulumi.Input[_builtins.str]]]
+    """
+    `mcp_oauth` credentials: when the access token expires, as an RFC 3339 timestamp, if known. OpenAI updates the expiry when it refreshes the token; that is not reported as drift.
+    """
+    mcp_server_url: NotRequired[Optional[pulumi.Input[_builtins.str]]]
+    """
+    `mcp_oauth` and `static_bearer` credentials: the HTTPS URL of the MCP server the credential authorizes. Required. An MCP tool uses the credential whose server URL matches, or the one its `credentialId` names. Changing it replaces the credential.
+    """
+    networking: NotRequired[Optional[pulumi.Input['CredentialNetworkingArgsDict']]]
+    """
+    `environment_variable` credentials: where the secret may be sent. Required. Changing it replaces the credential.
+    """
+    refresh: NotRequired[Optional[pulumi.Input['CredentialOAuthRefreshArgsDict']]]
+    """
+    `mcp_oauth` credentials: how OpenAI refreshes the access token. When unset, the token is not refreshed. Adding or removing it replaces the credential.
+    """
+    secret_name: NotRequired[Optional[pulumi.Input[_builtins.str]]]
+    """
+    `environment_variable` credentials: the name of the environment variable that receives a placeholder for the secret. Required. Use ASCII letters, digits and underscores, starting with a letter or underscore; names starting with `CODEX_` are reserved. It must be unique among the vault's environment variable credentials. Changing it replaces the credential.
+    """
+    secret_value: NotRequired[Optional[pulumi.Input[_builtins.str]]]
+    """
+    `environment_variable` credentials: the secret. Required. It must not contain carriage returns, newlines or NUL bytes. Sandbox code only sees a placeholder; OpenAI's egress proxy substitutes the secret in requests to allowed hosts. Changing it rotates the secret in place, for sessions created afterwards.
+    """
+    token: NotRequired[Optional[pulumi.Input[_builtins.str]]]
+    """
+    `static_bearer` credentials: the bearer token, which is not refreshed automatically. Required. Changing it rotates the token in place.
+    """
+
+@pulumi.input_type
+class CredentialAuthArgs:
+    def __init__(__self__, *,
+                 type: pulumi.Input['CredentialAuthType'],
+                 access_token: Optional[pulumi.Input[_builtins.str]] = None,
+                 expires_at: Optional[pulumi.Input[_builtins.str]] = None,
+                 mcp_server_url: Optional[pulumi.Input[_builtins.str]] = None,
+                 networking: Optional[pulumi.Input['CredentialNetworkingArgs']] = None,
+                 refresh: Optional[pulumi.Input['CredentialOAuthRefreshArgs']] = None,
+                 secret_name: Optional[pulumi.Input[_builtins.str]] = None,
+                 secret_value: Optional[pulumi.Input[_builtins.str]] = None,
+                 token: Optional[pulumi.Input[_builtins.str]] = None):
+        """
+        How a credential authenticates. `type` selects the kind of credential; each other property applies only to the credential types named in its description. Secrets are write-only: the API never returns them, so they are not refreshed.
+
+        :param pulumi.Input['CredentialAuthType'] type: The kind of credential. It cannot be changed: changing it replaces the credential.
+        :param pulumi.Input[_builtins.str] access_token: `mcp_oauth` credentials: the OAuth access token. Required. Changing it rotates the token in place.
+        :param pulumi.Input[_builtins.str] expires_at: `mcp_oauth` credentials: when the access token expires, as an RFC 3339 timestamp, if known. OpenAI updates the expiry when it refreshes the token; that is not reported as drift.
+        :param pulumi.Input[_builtins.str] mcp_server_url: `mcp_oauth` and `static_bearer` credentials: the HTTPS URL of the MCP server the credential authorizes. Required. An MCP tool uses the credential whose server URL matches, or the one its `credentialId` names. Changing it replaces the credential.
+        :param pulumi.Input['CredentialNetworkingArgs'] networking: `environment_variable` credentials: where the secret may be sent. Required. Changing it replaces the credential.
+        :param pulumi.Input['CredentialOAuthRefreshArgs'] refresh: `mcp_oauth` credentials: how OpenAI refreshes the access token. When unset, the token is not refreshed. Adding or removing it replaces the credential.
+        :param pulumi.Input[_builtins.str] secret_name: `environment_variable` credentials: the name of the environment variable that receives a placeholder for the secret. Required. Use ASCII letters, digits and underscores, starting with a letter or underscore; names starting with `CODEX_` are reserved. It must be unique among the vault's environment variable credentials. Changing it replaces the credential.
+        :param pulumi.Input[_builtins.str] secret_value: `environment_variable` credentials: the secret. Required. It must not contain carriage returns, newlines or NUL bytes. Sandbox code only sees a placeholder; OpenAI's egress proxy substitutes the secret in requests to allowed hosts. Changing it rotates the secret in place, for sessions created afterwards.
+        :param pulumi.Input[_builtins.str] token: `static_bearer` credentials: the bearer token, which is not refreshed automatically. Required. Changing it rotates the token in place.
+        """
+        pulumi.set(__self__, "type", type)
+        if access_token is not None:
+            pulumi.set(__self__, "access_token", access_token)
+        if expires_at is not None:
+            pulumi.set(__self__, "expires_at", expires_at)
+        if mcp_server_url is not None:
+            pulumi.set(__self__, "mcp_server_url", mcp_server_url)
+        if networking is not None:
+            pulumi.set(__self__, "networking", networking)
+        if refresh is not None:
+            pulumi.set(__self__, "refresh", refresh)
+        if secret_name is not None:
+            pulumi.set(__self__, "secret_name", secret_name)
+        if secret_value is not None:
+            pulumi.set(__self__, "secret_value", secret_value)
+        if token is not None:
+            pulumi.set(__self__, "token", token)
+
+    @_builtins.property
+    @pulumi.getter
+    def type(self) -> pulumi.Input['CredentialAuthType']:
+        """
+        The kind of credential. It cannot be changed: changing it replaces the credential.
+        """
+        return pulumi.get(self, "type")
+
+    @type.setter
+    def type(self, value: pulumi.Input['CredentialAuthType']):
+        pulumi.set(self, "type", value)
+
+    @_builtins.property
+    @pulumi.getter(name="accessToken")
+    def access_token(self) -> Optional[pulumi.Input[_builtins.str]]:
+        """
+        `mcp_oauth` credentials: the OAuth access token. Required. Changing it rotates the token in place.
+        """
+        return pulumi.get(self, "access_token")
+
+    @access_token.setter
+    def access_token(self, value: Optional[pulumi.Input[_builtins.str]]):
+        pulumi.set(self, "access_token", value)
+
+    @_builtins.property
+    @pulumi.getter(name="expiresAt")
+    def expires_at(self) -> Optional[pulumi.Input[_builtins.str]]:
+        """
+        `mcp_oauth` credentials: when the access token expires, as an RFC 3339 timestamp, if known. OpenAI updates the expiry when it refreshes the token; that is not reported as drift.
+        """
+        return pulumi.get(self, "expires_at")
+
+    @expires_at.setter
+    def expires_at(self, value: Optional[pulumi.Input[_builtins.str]]):
+        pulumi.set(self, "expires_at", value)
+
+    @_builtins.property
+    @pulumi.getter(name="mcpServerUrl")
+    def mcp_server_url(self) -> Optional[pulumi.Input[_builtins.str]]:
+        """
+        `mcp_oauth` and `static_bearer` credentials: the HTTPS URL of the MCP server the credential authorizes. Required. An MCP tool uses the credential whose server URL matches, or the one its `credentialId` names. Changing it replaces the credential.
+        """
+        return pulumi.get(self, "mcp_server_url")
+
+    @mcp_server_url.setter
+    def mcp_server_url(self, value: Optional[pulumi.Input[_builtins.str]]):
+        pulumi.set(self, "mcp_server_url", value)
+
+    @_builtins.property
+    @pulumi.getter
+    def networking(self) -> Optional[pulumi.Input['CredentialNetworkingArgs']]:
+        """
+        `environment_variable` credentials: where the secret may be sent. Required. Changing it replaces the credential.
+        """
+        return pulumi.get(self, "networking")
+
+    @networking.setter
+    def networking(self, value: Optional[pulumi.Input['CredentialNetworkingArgs']]):
+        pulumi.set(self, "networking", value)
+
+    @_builtins.property
+    @pulumi.getter
+    def refresh(self) -> Optional[pulumi.Input['CredentialOAuthRefreshArgs']]:
+        """
+        `mcp_oauth` credentials: how OpenAI refreshes the access token. When unset, the token is not refreshed. Adding or removing it replaces the credential.
+        """
+        return pulumi.get(self, "refresh")
+
+    @refresh.setter
+    def refresh(self, value: Optional[pulumi.Input['CredentialOAuthRefreshArgs']]):
+        pulumi.set(self, "refresh", value)
+
+    @_builtins.property
+    @pulumi.getter(name="secretName")
+    def secret_name(self) -> Optional[pulumi.Input[_builtins.str]]:
+        """
+        `environment_variable` credentials: the name of the environment variable that receives a placeholder for the secret. Required. Use ASCII letters, digits and underscores, starting with a letter or underscore; names starting with `CODEX_` are reserved. It must be unique among the vault's environment variable credentials. Changing it replaces the credential.
+        """
+        return pulumi.get(self, "secret_name")
+
+    @secret_name.setter
+    def secret_name(self, value: Optional[pulumi.Input[_builtins.str]]):
+        pulumi.set(self, "secret_name", value)
+
+    @_builtins.property
+    @pulumi.getter(name="secretValue")
+    def secret_value(self) -> Optional[pulumi.Input[_builtins.str]]:
+        """
+        `environment_variable` credentials: the secret. Required. It must not contain carriage returns, newlines or NUL bytes. Sandbox code only sees a placeholder; OpenAI's egress proxy substitutes the secret in requests to allowed hosts. Changing it rotates the secret in place, for sessions created afterwards.
+        """
+        return pulumi.get(self, "secret_value")
+
+    @secret_value.setter
+    def secret_value(self, value: Optional[pulumi.Input[_builtins.str]]):
+        pulumi.set(self, "secret_value", value)
+
+    @_builtins.property
+    @pulumi.getter
+    def token(self) -> Optional[pulumi.Input[_builtins.str]]:
+        """
+        `static_bearer` credentials: the bearer token, which is not refreshed automatically. Required. Changing it rotates the token in place.
+        """
+        return pulumi.get(self, "token")
+
+    @token.setter
+    def token(self, value: Optional[pulumi.Input[_builtins.str]]):
+        pulumi.set(self, "token", value)
+
+
+class CredentialNetworkingArgsDict(TypedDict):
+    type: pulumi.Input['CredentialNetworkingType']
+    """
+    `limited` sends the secret only to `allowedHosts`. `unrestricted` sends it to any host the session's network policy allows, which must then be `restricted` with explicit allowed domains.
+    """
+    allowed_hosts: NotRequired[Optional[pulumi.Input[Sequence[pulumi.Input[_builtins.str]]]]]
+    """
+    `limited` networking: the hosts the secret may be sent to, 1 to 16 lowercase host names or IPv4 addresses, without a scheme, path, port or wildcard. They must also be allowed by the session's network policy. Required.
+    """
+
+@pulumi.input_type
+class CredentialNetworkingArgs:
+    def __init__(__self__, *,
+                 type: pulumi.Input['CredentialNetworkingType'],
+                 allowed_hosts: Optional[pulumi.Input[Sequence[pulumi.Input[_builtins.str]]]] = None):
+        """
+        :param pulumi.Input['CredentialNetworkingType'] type: `limited` sends the secret only to `allowedHosts`. `unrestricted` sends it to any host the session's network policy allows, which must then be `restricted` with explicit allowed domains.
+        :param pulumi.Input[Sequence[pulumi.Input[_builtins.str]]] allowed_hosts: `limited` networking: the hosts the secret may be sent to, 1 to 16 lowercase host names or IPv4 addresses, without a scheme, path, port or wildcard. They must also be allowed by the session's network policy. Required.
+        """
+        pulumi.set(__self__, "type", type)
+        if allowed_hosts is not None:
+            pulumi.set(__self__, "allowed_hosts", allowed_hosts)
+
+    @_builtins.property
+    @pulumi.getter
+    def type(self) -> pulumi.Input['CredentialNetworkingType']:
+        """
+        `limited` sends the secret only to `allowedHosts`. `unrestricted` sends it to any host the session's network policy allows, which must then be `restricted` with explicit allowed domains.
+        """
+        return pulumi.get(self, "type")
+
+    @type.setter
+    def type(self, value: pulumi.Input['CredentialNetworkingType']):
+        pulumi.set(self, "type", value)
+
+    @_builtins.property
+    @pulumi.getter(name="allowedHosts")
+    def allowed_hosts(self) -> Optional[pulumi.Input[Sequence[pulumi.Input[_builtins.str]]]]:
+        """
+        `limited` networking: the hosts the secret may be sent to, 1 to 16 lowercase host names or IPv4 addresses, without a scheme, path, port or wildcard. They must also be allowed by the session's network policy. Required.
+        """
+        return pulumi.get(self, "allowed_hosts")
+
+    @allowed_hosts.setter
+    def allowed_hosts(self, value: Optional[pulumi.Input[Sequence[pulumi.Input[_builtins.str]]]]):
+        pulumi.set(self, "allowed_hosts", value)
+
+
+class CredentialOAuthRefreshArgsDict(TypedDict):
+    client_id: pulumi.Input[_builtins.str]
+    """
+    The OAuth client ID used to request a new token. Changing it replaces the credential.
+    """
+    refresh_token: pulumi.Input[_builtins.str]
+    """
+    The OAuth refresh token. Changing it rotates the token in place.
+    """
+    token_endpoint: pulumi.Input[_builtins.str]
+    """
+    The HTTPS token endpoint the refresh token is exchanged at. Changing it replaces the credential.
+    """
+    token_endpoint_auth: pulumi.Input['CredentialTokenEndpointAuthArgsDict']
+    """
+    How the client authenticates to the token endpoint.
+    """
+    resource: NotRequired[Optional[pulumi.Input[_builtins.str]]]
+    """
+    The resource URI sent when refreshing, if the server requires one. Changing it replaces the credential.
+    """
+    scope: NotRequired[Optional[pulumi.Input[_builtins.str]]]
+    """
+    The space-separated OAuth scopes requested when refreshing.
+    """
+
+@pulumi.input_type
+class CredentialOAuthRefreshArgs:
+    def __init__(__self__, *,
+                 client_id: pulumi.Input[_builtins.str],
+                 refresh_token: pulumi.Input[_builtins.str],
+                 token_endpoint: pulumi.Input[_builtins.str],
+                 token_endpoint_auth: pulumi.Input['CredentialTokenEndpointAuthArgs'],
+                 resource: Optional[pulumi.Input[_builtins.str]] = None,
+                 scope: Optional[pulumi.Input[_builtins.str]] = None):
+        """
+        :param pulumi.Input[_builtins.str] client_id: The OAuth client ID used to request a new token. Changing it replaces the credential.
+        :param pulumi.Input[_builtins.str] refresh_token: The OAuth refresh token. Changing it rotates the token in place.
+        :param pulumi.Input[_builtins.str] token_endpoint: The HTTPS token endpoint the refresh token is exchanged at. Changing it replaces the credential.
+        :param pulumi.Input['CredentialTokenEndpointAuthArgs'] token_endpoint_auth: How the client authenticates to the token endpoint.
+        :param pulumi.Input[_builtins.str] resource: The resource URI sent when refreshing, if the server requires one. Changing it replaces the credential.
+        :param pulumi.Input[_builtins.str] scope: The space-separated OAuth scopes requested when refreshing.
+        """
+        pulumi.set(__self__, "client_id", client_id)
+        pulumi.set(__self__, "refresh_token", refresh_token)
+        pulumi.set(__self__, "token_endpoint", token_endpoint)
+        pulumi.set(__self__, "token_endpoint_auth", token_endpoint_auth)
+        if resource is not None:
+            pulumi.set(__self__, "resource", resource)
+        if scope is not None:
+            pulumi.set(__self__, "scope", scope)
+
+    @_builtins.property
+    @pulumi.getter(name="clientId")
+    def client_id(self) -> pulumi.Input[_builtins.str]:
+        """
+        The OAuth client ID used to request a new token. Changing it replaces the credential.
+        """
+        return pulumi.get(self, "client_id")
+
+    @client_id.setter
+    def client_id(self, value: pulumi.Input[_builtins.str]):
+        pulumi.set(self, "client_id", value)
+
+    @_builtins.property
+    @pulumi.getter(name="refreshToken")
+    def refresh_token(self) -> pulumi.Input[_builtins.str]:
+        """
+        The OAuth refresh token. Changing it rotates the token in place.
+        """
+        return pulumi.get(self, "refresh_token")
+
+    @refresh_token.setter
+    def refresh_token(self, value: pulumi.Input[_builtins.str]):
+        pulumi.set(self, "refresh_token", value)
+
+    @_builtins.property
+    @pulumi.getter(name="tokenEndpoint")
+    def token_endpoint(self) -> pulumi.Input[_builtins.str]:
+        """
+        The HTTPS token endpoint the refresh token is exchanged at. Changing it replaces the credential.
+        """
+        return pulumi.get(self, "token_endpoint")
+
+    @token_endpoint.setter
+    def token_endpoint(self, value: pulumi.Input[_builtins.str]):
+        pulumi.set(self, "token_endpoint", value)
+
+    @_builtins.property
+    @pulumi.getter(name="tokenEndpointAuth")
+    def token_endpoint_auth(self) -> pulumi.Input['CredentialTokenEndpointAuthArgs']:
+        """
+        How the client authenticates to the token endpoint.
+        """
+        return pulumi.get(self, "token_endpoint_auth")
+
+    @token_endpoint_auth.setter
+    def token_endpoint_auth(self, value: pulumi.Input['CredentialTokenEndpointAuthArgs']):
+        pulumi.set(self, "token_endpoint_auth", value)
+
+    @_builtins.property
+    @pulumi.getter
+    def resource(self) -> Optional[pulumi.Input[_builtins.str]]:
+        """
+        The resource URI sent when refreshing, if the server requires one. Changing it replaces the credential.
+        """
+        return pulumi.get(self, "resource")
+
+    @resource.setter
+    def resource(self, value: Optional[pulumi.Input[_builtins.str]]):
+        pulumi.set(self, "resource", value)
+
+    @_builtins.property
+    @pulumi.getter
+    def scope(self) -> Optional[pulumi.Input[_builtins.str]]:
+        """
+        The space-separated OAuth scopes requested when refreshing.
+        """
+        return pulumi.get(self, "scope")
+
+    @scope.setter
+    def scope(self, value: Optional[pulumi.Input[_builtins.str]]):
+        pulumi.set(self, "scope", value)
+
+
+class CredentialTokenEndpointAuthArgsDict(TypedDict):
+    type: pulumi.Input['TokenEndpointAuthType']
+    """
+    How the client authenticates: `none` sends only the client ID, `client_secret_basic` sends the client secret with HTTP Basic authentication, and `client_secret_post` sends it in the request body. Changing it replaces the credential.
+    """
+    client_secret: NotRequired[Optional[pulumi.Input[_builtins.str]]]
+    """
+    `client_secret_basic` and `client_secret_post`: the OAuth client secret. Required. Changing it rotates the secret in place.
+    """
+
+@pulumi.input_type
+class CredentialTokenEndpointAuthArgs:
+    def __init__(__self__, *,
+                 type: pulumi.Input['TokenEndpointAuthType'],
+                 client_secret: Optional[pulumi.Input[_builtins.str]] = None):
+        """
+        :param pulumi.Input['TokenEndpointAuthType'] type: How the client authenticates: `none` sends only the client ID, `client_secret_basic` sends the client secret with HTTP Basic authentication, and `client_secret_post` sends it in the request body. Changing it replaces the credential.
+        :param pulumi.Input[_builtins.str] client_secret: `client_secret_basic` and `client_secret_post`: the OAuth client secret. Required. Changing it rotates the secret in place.
+        """
+        pulumi.set(__self__, "type", type)
+        if client_secret is not None:
+            pulumi.set(__self__, "client_secret", client_secret)
+
+    @_builtins.property
+    @pulumi.getter
+    def type(self) -> pulumi.Input['TokenEndpointAuthType']:
+        """
+        How the client authenticates: `none` sends only the client ID, `client_secret_basic` sends the client secret with HTTP Basic authentication, and `client_secret_post` sends it in the request body. Changing it replaces the credential.
+        """
+        return pulumi.get(self, "type")
+
+    @type.setter
+    def type(self, value: pulumi.Input['TokenEndpointAuthType']):
+        pulumi.set(self, "type", value)
+
+    @_builtins.property
+    @pulumi.getter(name="clientSecret")
+    def client_secret(self) -> Optional[pulumi.Input[_builtins.str]]:
+        """
+        `client_secret_basic` and `client_secret_post`: the OAuth client secret. Required. Changing it rotates the secret in place.
+        """
+        return pulumi.get(self, "client_secret")
+
+    @client_secret.setter
+    def client_secret(self, value: Optional[pulumi.Input[_builtins.str]]):
+        pulumi.set(self, "client_secret", value)
 
 
 class EnvironmentConfigArgsDict(TypedDict):
