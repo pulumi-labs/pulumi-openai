@@ -1731,6 +1731,677 @@ func (o AutomationTargetOutput) VaultIds() pulumi.StringArrayOutput {
 	return o.ApplyT(func(v AutomationTarget) []string { return v.VaultIds }).(pulumi.StringArrayOutput)
 }
 
+// How a credential authenticates. `type` selects the kind of credential; each other property applies only to the credential types named in its description. Secrets are write-only: the API never returns them, so they are not refreshed.
+type CredentialAuth struct {
+	// `mcp_oauth` credentials: the OAuth access token. Required. Changing it rotates the token in place.
+	AccessToken *string `pulumi:"accessToken"`
+	// `mcp_oauth` credentials: when the access token expires, as an RFC 3339 timestamp, if known. OpenAI updates the expiry when it refreshes the token; that is not reported as drift.
+	ExpiresAt *string `pulumi:"expiresAt"`
+	// `mcp_oauth` and `static_bearer` credentials: the HTTPS URL of the MCP server the credential authorizes. Required. An MCP tool uses the credential whose server URL matches, or the one its `credentialId` names. Changing it replaces the credential.
+	McpServerUrl *string `pulumi:"mcpServerUrl"`
+	// `environment_variable` credentials: where the secret may be sent. Required. Changing it replaces the credential.
+	Networking *CredentialNetworking `pulumi:"networking"`
+	// `mcp_oauth` credentials: how OpenAI refreshes the access token. When unset, the token is not refreshed. Adding or removing it replaces the credential.
+	Refresh *CredentialOAuthRefresh `pulumi:"refresh"`
+	// `environment_variable` credentials: the name of the environment variable that receives a placeholder for the secret. Required. Use ASCII letters, digits and underscores, starting with a letter or underscore; names starting with `CODEX_` are reserved. It must be unique among the vault's environment variable credentials. Changing it replaces the credential.
+	SecretName *string `pulumi:"secretName"`
+	// `environment_variable` credentials: the secret. Required. It must not contain carriage returns, newlines or NUL bytes. Sandbox code only sees a placeholder; OpenAI's egress proxy substitutes the secret in requests to allowed hosts. Changing it rotates the secret in place, for sessions created afterwards.
+	SecretValue *string `pulumi:"secretValue"`
+	// `static_bearer` credentials: the bearer token, which is not refreshed automatically. Required. Changing it rotates the token in place.
+	Token *string `pulumi:"token"`
+	// The kind of credential. It cannot be changed: changing it replaces the credential.
+	Type CredentialAuthType `pulumi:"type"`
+}
+
+// CredentialAuthInput is an input type that accepts CredentialAuthArgs and CredentialAuthOutput values.
+// You can construct a concrete instance of `CredentialAuthInput` via:
+//
+//	CredentialAuthArgs{...}
+type CredentialAuthInput interface {
+	pulumi.Input
+
+	ToCredentialAuthOutput() CredentialAuthOutput
+	ToCredentialAuthOutputWithContext(context.Context) CredentialAuthOutput
+}
+
+// How a credential authenticates. `type` selects the kind of credential; each other property applies only to the credential types named in its description. Secrets are write-only: the API never returns them, so they are not refreshed.
+type CredentialAuthArgs struct {
+	// `mcp_oauth` credentials: the OAuth access token. Required. Changing it rotates the token in place.
+	AccessToken pulumi.StringPtrInput `pulumi:"accessToken"`
+	// `mcp_oauth` credentials: when the access token expires, as an RFC 3339 timestamp, if known. OpenAI updates the expiry when it refreshes the token; that is not reported as drift.
+	ExpiresAt pulumi.StringPtrInput `pulumi:"expiresAt"`
+	// `mcp_oauth` and `static_bearer` credentials: the HTTPS URL of the MCP server the credential authorizes. Required. An MCP tool uses the credential whose server URL matches, or the one its `credentialId` names. Changing it replaces the credential.
+	McpServerUrl pulumi.StringPtrInput `pulumi:"mcpServerUrl"`
+	// `environment_variable` credentials: where the secret may be sent. Required. Changing it replaces the credential.
+	Networking CredentialNetworkingPtrInput `pulumi:"networking"`
+	// `mcp_oauth` credentials: how OpenAI refreshes the access token. When unset, the token is not refreshed. Adding or removing it replaces the credential.
+	Refresh CredentialOAuthRefreshPtrInput `pulumi:"refresh"`
+	// `environment_variable` credentials: the name of the environment variable that receives a placeholder for the secret. Required. Use ASCII letters, digits and underscores, starting with a letter or underscore; names starting with `CODEX_` are reserved. It must be unique among the vault's environment variable credentials. Changing it replaces the credential.
+	SecretName pulumi.StringPtrInput `pulumi:"secretName"`
+	// `environment_variable` credentials: the secret. Required. It must not contain carriage returns, newlines or NUL bytes. Sandbox code only sees a placeholder; OpenAI's egress proxy substitutes the secret in requests to allowed hosts. Changing it rotates the secret in place, for sessions created afterwards.
+	SecretValue pulumi.StringPtrInput `pulumi:"secretValue"`
+	// `static_bearer` credentials: the bearer token, which is not refreshed automatically. Required. Changing it rotates the token in place.
+	Token pulumi.StringPtrInput `pulumi:"token"`
+	// The kind of credential. It cannot be changed: changing it replaces the credential.
+	Type CredentialAuthTypeInput `pulumi:"type"`
+}
+
+func (CredentialAuthArgs) ElementType() reflect.Type {
+	return reflect.TypeOf((*CredentialAuth)(nil)).Elem()
+}
+
+func (i CredentialAuthArgs) ToCredentialAuthOutput() CredentialAuthOutput {
+	return i.ToCredentialAuthOutputWithContext(context.Background())
+}
+
+func (i CredentialAuthArgs) ToCredentialAuthOutputWithContext(ctx context.Context) CredentialAuthOutput {
+	return pulumi.ToOutputWithContext(ctx, i).(CredentialAuthOutput)
+}
+
+// How a credential authenticates. `type` selects the kind of credential; each other property applies only to the credential types named in its description. Secrets are write-only: the API never returns them, so they are not refreshed.
+type CredentialAuthOutput struct{ *pulumi.OutputState }
+
+func (CredentialAuthOutput) ElementType() reflect.Type {
+	return reflect.TypeOf((*CredentialAuth)(nil)).Elem()
+}
+
+func (o CredentialAuthOutput) ToCredentialAuthOutput() CredentialAuthOutput {
+	return o
+}
+
+func (o CredentialAuthOutput) ToCredentialAuthOutputWithContext(ctx context.Context) CredentialAuthOutput {
+	return o
+}
+
+// `mcp_oauth` credentials: the OAuth access token. Required. Changing it rotates the token in place.
+func (o CredentialAuthOutput) AccessToken() pulumi.StringPtrOutput {
+	return o.ApplyT(func(v CredentialAuth) *string { return v.AccessToken }).(pulumi.StringPtrOutput)
+}
+
+// `mcp_oauth` credentials: when the access token expires, as an RFC 3339 timestamp, if known. OpenAI updates the expiry when it refreshes the token; that is not reported as drift.
+func (o CredentialAuthOutput) ExpiresAt() pulumi.StringPtrOutput {
+	return o.ApplyT(func(v CredentialAuth) *string { return v.ExpiresAt }).(pulumi.StringPtrOutput)
+}
+
+// `mcp_oauth` and `static_bearer` credentials: the HTTPS URL of the MCP server the credential authorizes. Required. An MCP tool uses the credential whose server URL matches, or the one its `credentialId` names. Changing it replaces the credential.
+func (o CredentialAuthOutput) McpServerUrl() pulumi.StringPtrOutput {
+	return o.ApplyT(func(v CredentialAuth) *string { return v.McpServerUrl }).(pulumi.StringPtrOutput)
+}
+
+// `environment_variable` credentials: where the secret may be sent. Required. Changing it replaces the credential.
+func (o CredentialAuthOutput) Networking() CredentialNetworkingPtrOutput {
+	return o.ApplyT(func(v CredentialAuth) *CredentialNetworking { return v.Networking }).(CredentialNetworkingPtrOutput)
+}
+
+// `mcp_oauth` credentials: how OpenAI refreshes the access token. When unset, the token is not refreshed. Adding or removing it replaces the credential.
+func (o CredentialAuthOutput) Refresh() CredentialOAuthRefreshPtrOutput {
+	return o.ApplyT(func(v CredentialAuth) *CredentialOAuthRefresh { return v.Refresh }).(CredentialOAuthRefreshPtrOutput)
+}
+
+// `environment_variable` credentials: the name of the environment variable that receives a placeholder for the secret. Required. Use ASCII letters, digits and underscores, starting with a letter or underscore; names starting with `CODEX_` are reserved. It must be unique among the vault's environment variable credentials. Changing it replaces the credential.
+func (o CredentialAuthOutput) SecretName() pulumi.StringPtrOutput {
+	return o.ApplyT(func(v CredentialAuth) *string { return v.SecretName }).(pulumi.StringPtrOutput)
+}
+
+// `environment_variable` credentials: the secret. Required. It must not contain carriage returns, newlines or NUL bytes. Sandbox code only sees a placeholder; OpenAI's egress proxy substitutes the secret in requests to allowed hosts. Changing it rotates the secret in place, for sessions created afterwards.
+func (o CredentialAuthOutput) SecretValue() pulumi.StringPtrOutput {
+	return o.ApplyT(func(v CredentialAuth) *string { return v.SecretValue }).(pulumi.StringPtrOutput)
+}
+
+// `static_bearer` credentials: the bearer token, which is not refreshed automatically. Required. Changing it rotates the token in place.
+func (o CredentialAuthOutput) Token() pulumi.StringPtrOutput {
+	return o.ApplyT(func(v CredentialAuth) *string { return v.Token }).(pulumi.StringPtrOutput)
+}
+
+// The kind of credential. It cannot be changed: changing it replaces the credential.
+func (o CredentialAuthOutput) Type() CredentialAuthTypeOutput {
+	return o.ApplyT(func(v CredentialAuth) CredentialAuthType { return v.Type }).(CredentialAuthTypeOutput)
+}
+
+type CredentialNetworking struct {
+	// `limited` networking: the hosts the secret may be sent to, 1 to 16 lowercase host names or IPv4 addresses, without a scheme, path, port or wildcard. They must also be allowed by the session's network policy. Required.
+	AllowedHosts []string `pulumi:"allowedHosts"`
+	// `limited` sends the secret only to `allowedHosts`. `unrestricted` sends it to any host the session's network policy allows, which must then be `restricted` with explicit allowed domains.
+	Type CredentialNetworkingType `pulumi:"type"`
+}
+
+// CredentialNetworkingInput is an input type that accepts CredentialNetworkingArgs and CredentialNetworkingOutput values.
+// You can construct a concrete instance of `CredentialNetworkingInput` via:
+//
+//	CredentialNetworkingArgs{...}
+type CredentialNetworkingInput interface {
+	pulumi.Input
+
+	ToCredentialNetworkingOutput() CredentialNetworkingOutput
+	ToCredentialNetworkingOutputWithContext(context.Context) CredentialNetworkingOutput
+}
+
+type CredentialNetworkingArgs struct {
+	// `limited` networking: the hosts the secret may be sent to, 1 to 16 lowercase host names or IPv4 addresses, without a scheme, path, port or wildcard. They must also be allowed by the session's network policy. Required.
+	AllowedHosts pulumi.StringArrayInput `pulumi:"allowedHosts"`
+	// `limited` sends the secret only to `allowedHosts`. `unrestricted` sends it to any host the session's network policy allows, which must then be `restricted` with explicit allowed domains.
+	Type CredentialNetworkingTypeInput `pulumi:"type"`
+}
+
+func (CredentialNetworkingArgs) ElementType() reflect.Type {
+	return reflect.TypeOf((*CredentialNetworking)(nil)).Elem()
+}
+
+func (i CredentialNetworkingArgs) ToCredentialNetworkingOutput() CredentialNetworkingOutput {
+	return i.ToCredentialNetworkingOutputWithContext(context.Background())
+}
+
+func (i CredentialNetworkingArgs) ToCredentialNetworkingOutputWithContext(ctx context.Context) CredentialNetworkingOutput {
+	return pulumi.ToOutputWithContext(ctx, i).(CredentialNetworkingOutput)
+}
+
+func (i CredentialNetworkingArgs) ToCredentialNetworkingPtrOutput() CredentialNetworkingPtrOutput {
+	return i.ToCredentialNetworkingPtrOutputWithContext(context.Background())
+}
+
+func (i CredentialNetworkingArgs) ToCredentialNetworkingPtrOutputWithContext(ctx context.Context) CredentialNetworkingPtrOutput {
+	return pulumi.ToOutputWithContext(ctx, i).(CredentialNetworkingOutput).ToCredentialNetworkingPtrOutputWithContext(ctx)
+}
+
+// CredentialNetworkingPtrInput is an input type that accepts CredentialNetworkingArgs, CredentialNetworkingPtr and CredentialNetworkingPtrOutput values.
+// You can construct a concrete instance of `CredentialNetworkingPtrInput` via:
+//
+//	        CredentialNetworkingArgs{...}
+//
+//	or:
+//
+//	        nil
+type CredentialNetworkingPtrInput interface {
+	pulumi.Input
+
+	ToCredentialNetworkingPtrOutput() CredentialNetworkingPtrOutput
+	ToCredentialNetworkingPtrOutputWithContext(context.Context) CredentialNetworkingPtrOutput
+}
+
+type credentialNetworkingPtrType CredentialNetworkingArgs
+
+func CredentialNetworkingPtr(v *CredentialNetworkingArgs) CredentialNetworkingPtrInput {
+	return (*credentialNetworkingPtrType)(v)
+}
+
+func (*credentialNetworkingPtrType) ElementType() reflect.Type {
+	return reflect.TypeOf((**CredentialNetworking)(nil)).Elem()
+}
+
+func (i *credentialNetworkingPtrType) ToCredentialNetworkingPtrOutput() CredentialNetworkingPtrOutput {
+	return i.ToCredentialNetworkingPtrOutputWithContext(context.Background())
+}
+
+func (i *credentialNetworkingPtrType) ToCredentialNetworkingPtrOutputWithContext(ctx context.Context) CredentialNetworkingPtrOutput {
+	return pulumi.ToOutputWithContext(ctx, i).(CredentialNetworkingPtrOutput)
+}
+
+type CredentialNetworkingOutput struct{ *pulumi.OutputState }
+
+func (CredentialNetworkingOutput) ElementType() reflect.Type {
+	return reflect.TypeOf((*CredentialNetworking)(nil)).Elem()
+}
+
+func (o CredentialNetworkingOutput) ToCredentialNetworkingOutput() CredentialNetworkingOutput {
+	return o
+}
+
+func (o CredentialNetworkingOutput) ToCredentialNetworkingOutputWithContext(ctx context.Context) CredentialNetworkingOutput {
+	return o
+}
+
+func (o CredentialNetworkingOutput) ToCredentialNetworkingPtrOutput() CredentialNetworkingPtrOutput {
+	return o.ToCredentialNetworkingPtrOutputWithContext(context.Background())
+}
+
+func (o CredentialNetworkingOutput) ToCredentialNetworkingPtrOutputWithContext(ctx context.Context) CredentialNetworkingPtrOutput {
+	return o.ApplyTWithContext(ctx, func(_ context.Context, v CredentialNetworking) *CredentialNetworking {
+		return &v
+	}).(CredentialNetworkingPtrOutput)
+}
+
+// `limited` networking: the hosts the secret may be sent to, 1 to 16 lowercase host names or IPv4 addresses, without a scheme, path, port or wildcard. They must also be allowed by the session's network policy. Required.
+func (o CredentialNetworkingOutput) AllowedHosts() pulumi.StringArrayOutput {
+	return o.ApplyT(func(v CredentialNetworking) []string { return v.AllowedHosts }).(pulumi.StringArrayOutput)
+}
+
+// `limited` sends the secret only to `allowedHosts`. `unrestricted` sends it to any host the session's network policy allows, which must then be `restricted` with explicit allowed domains.
+func (o CredentialNetworkingOutput) Type() CredentialNetworkingTypeOutput {
+	return o.ApplyT(func(v CredentialNetworking) CredentialNetworkingType { return v.Type }).(CredentialNetworkingTypeOutput)
+}
+
+type CredentialNetworkingPtrOutput struct{ *pulumi.OutputState }
+
+func (CredentialNetworkingPtrOutput) ElementType() reflect.Type {
+	return reflect.TypeOf((**CredentialNetworking)(nil)).Elem()
+}
+
+func (o CredentialNetworkingPtrOutput) ToCredentialNetworkingPtrOutput() CredentialNetworkingPtrOutput {
+	return o
+}
+
+func (o CredentialNetworkingPtrOutput) ToCredentialNetworkingPtrOutputWithContext(ctx context.Context) CredentialNetworkingPtrOutput {
+	return o
+}
+
+func (o CredentialNetworkingPtrOutput) Elem() CredentialNetworkingOutput {
+	return o.ApplyT(func(v *CredentialNetworking) CredentialNetworking {
+		if v != nil {
+			return *v
+		}
+		var ret CredentialNetworking
+		return ret
+	}).(CredentialNetworkingOutput)
+}
+
+// `limited` networking: the hosts the secret may be sent to, 1 to 16 lowercase host names or IPv4 addresses, without a scheme, path, port or wildcard. They must also be allowed by the session's network policy. Required.
+func (o CredentialNetworkingPtrOutput) AllowedHosts() pulumi.StringArrayOutput {
+	return o.ApplyT(func(v *CredentialNetworking) []string {
+		if v == nil {
+			return nil
+		}
+		return v.AllowedHosts
+	}).(pulumi.StringArrayOutput)
+}
+
+// `limited` sends the secret only to `allowedHosts`. `unrestricted` sends it to any host the session's network policy allows, which must then be `restricted` with explicit allowed domains.
+func (o CredentialNetworkingPtrOutput) Type() CredentialNetworkingTypePtrOutput {
+	return o.ApplyT(func(v *CredentialNetworking) *CredentialNetworkingType {
+		if v == nil {
+			return nil
+		}
+		return &v.Type
+	}).(CredentialNetworkingTypePtrOutput)
+}
+
+type CredentialOAuthRefresh struct {
+	// The OAuth client ID used to request a new token. Changing it replaces the credential.
+	ClientId string `pulumi:"clientId"`
+	// The OAuth refresh token. Changing it rotates the token in place.
+	RefreshToken string `pulumi:"refreshToken"`
+	// The resource URI sent when refreshing, if the server requires one. Changing it replaces the credential.
+	Resource *string `pulumi:"resource"`
+	// The space-separated OAuth scopes requested when refreshing.
+	Scope *string `pulumi:"scope"`
+	// The HTTPS token endpoint the refresh token is exchanged at. Changing it replaces the credential.
+	TokenEndpoint string `pulumi:"tokenEndpoint"`
+	// How the client authenticates to the token endpoint.
+	TokenEndpointAuth CredentialTokenEndpointAuth `pulumi:"tokenEndpointAuth"`
+}
+
+// CredentialOAuthRefreshInput is an input type that accepts CredentialOAuthRefreshArgs and CredentialOAuthRefreshOutput values.
+// You can construct a concrete instance of `CredentialOAuthRefreshInput` via:
+//
+//	CredentialOAuthRefreshArgs{...}
+type CredentialOAuthRefreshInput interface {
+	pulumi.Input
+
+	ToCredentialOAuthRefreshOutput() CredentialOAuthRefreshOutput
+	ToCredentialOAuthRefreshOutputWithContext(context.Context) CredentialOAuthRefreshOutput
+}
+
+type CredentialOAuthRefreshArgs struct {
+	// The OAuth client ID used to request a new token. Changing it replaces the credential.
+	ClientId pulumi.StringInput `pulumi:"clientId"`
+	// The OAuth refresh token. Changing it rotates the token in place.
+	RefreshToken pulumi.StringInput `pulumi:"refreshToken"`
+	// The resource URI sent when refreshing, if the server requires one. Changing it replaces the credential.
+	Resource pulumi.StringPtrInput `pulumi:"resource"`
+	// The space-separated OAuth scopes requested when refreshing.
+	Scope pulumi.StringPtrInput `pulumi:"scope"`
+	// The HTTPS token endpoint the refresh token is exchanged at. Changing it replaces the credential.
+	TokenEndpoint pulumi.StringInput `pulumi:"tokenEndpoint"`
+	// How the client authenticates to the token endpoint.
+	TokenEndpointAuth CredentialTokenEndpointAuthInput `pulumi:"tokenEndpointAuth"`
+}
+
+func (CredentialOAuthRefreshArgs) ElementType() reflect.Type {
+	return reflect.TypeOf((*CredentialOAuthRefresh)(nil)).Elem()
+}
+
+func (i CredentialOAuthRefreshArgs) ToCredentialOAuthRefreshOutput() CredentialOAuthRefreshOutput {
+	return i.ToCredentialOAuthRefreshOutputWithContext(context.Background())
+}
+
+func (i CredentialOAuthRefreshArgs) ToCredentialOAuthRefreshOutputWithContext(ctx context.Context) CredentialOAuthRefreshOutput {
+	return pulumi.ToOutputWithContext(ctx, i).(CredentialOAuthRefreshOutput)
+}
+
+func (i CredentialOAuthRefreshArgs) ToCredentialOAuthRefreshPtrOutput() CredentialOAuthRefreshPtrOutput {
+	return i.ToCredentialOAuthRefreshPtrOutputWithContext(context.Background())
+}
+
+func (i CredentialOAuthRefreshArgs) ToCredentialOAuthRefreshPtrOutputWithContext(ctx context.Context) CredentialOAuthRefreshPtrOutput {
+	return pulumi.ToOutputWithContext(ctx, i).(CredentialOAuthRefreshOutput).ToCredentialOAuthRefreshPtrOutputWithContext(ctx)
+}
+
+// CredentialOAuthRefreshPtrInput is an input type that accepts CredentialOAuthRefreshArgs, CredentialOAuthRefreshPtr and CredentialOAuthRefreshPtrOutput values.
+// You can construct a concrete instance of `CredentialOAuthRefreshPtrInput` via:
+//
+//	        CredentialOAuthRefreshArgs{...}
+//
+//	or:
+//
+//	        nil
+type CredentialOAuthRefreshPtrInput interface {
+	pulumi.Input
+
+	ToCredentialOAuthRefreshPtrOutput() CredentialOAuthRefreshPtrOutput
+	ToCredentialOAuthRefreshPtrOutputWithContext(context.Context) CredentialOAuthRefreshPtrOutput
+}
+
+type credentialOAuthRefreshPtrType CredentialOAuthRefreshArgs
+
+func CredentialOAuthRefreshPtr(v *CredentialOAuthRefreshArgs) CredentialOAuthRefreshPtrInput {
+	return (*credentialOAuthRefreshPtrType)(v)
+}
+
+func (*credentialOAuthRefreshPtrType) ElementType() reflect.Type {
+	return reflect.TypeOf((**CredentialOAuthRefresh)(nil)).Elem()
+}
+
+func (i *credentialOAuthRefreshPtrType) ToCredentialOAuthRefreshPtrOutput() CredentialOAuthRefreshPtrOutput {
+	return i.ToCredentialOAuthRefreshPtrOutputWithContext(context.Background())
+}
+
+func (i *credentialOAuthRefreshPtrType) ToCredentialOAuthRefreshPtrOutputWithContext(ctx context.Context) CredentialOAuthRefreshPtrOutput {
+	return pulumi.ToOutputWithContext(ctx, i).(CredentialOAuthRefreshPtrOutput)
+}
+
+type CredentialOAuthRefreshOutput struct{ *pulumi.OutputState }
+
+func (CredentialOAuthRefreshOutput) ElementType() reflect.Type {
+	return reflect.TypeOf((*CredentialOAuthRefresh)(nil)).Elem()
+}
+
+func (o CredentialOAuthRefreshOutput) ToCredentialOAuthRefreshOutput() CredentialOAuthRefreshOutput {
+	return o
+}
+
+func (o CredentialOAuthRefreshOutput) ToCredentialOAuthRefreshOutputWithContext(ctx context.Context) CredentialOAuthRefreshOutput {
+	return o
+}
+
+func (o CredentialOAuthRefreshOutput) ToCredentialOAuthRefreshPtrOutput() CredentialOAuthRefreshPtrOutput {
+	return o.ToCredentialOAuthRefreshPtrOutputWithContext(context.Background())
+}
+
+func (o CredentialOAuthRefreshOutput) ToCredentialOAuthRefreshPtrOutputWithContext(ctx context.Context) CredentialOAuthRefreshPtrOutput {
+	return o.ApplyTWithContext(ctx, func(_ context.Context, v CredentialOAuthRefresh) *CredentialOAuthRefresh {
+		return &v
+	}).(CredentialOAuthRefreshPtrOutput)
+}
+
+// The OAuth client ID used to request a new token. Changing it replaces the credential.
+func (o CredentialOAuthRefreshOutput) ClientId() pulumi.StringOutput {
+	return o.ApplyT(func(v CredentialOAuthRefresh) string { return v.ClientId }).(pulumi.StringOutput)
+}
+
+// The OAuth refresh token. Changing it rotates the token in place.
+func (o CredentialOAuthRefreshOutput) RefreshToken() pulumi.StringOutput {
+	return o.ApplyT(func(v CredentialOAuthRefresh) string { return v.RefreshToken }).(pulumi.StringOutput)
+}
+
+// The resource URI sent when refreshing, if the server requires one. Changing it replaces the credential.
+func (o CredentialOAuthRefreshOutput) Resource() pulumi.StringPtrOutput {
+	return o.ApplyT(func(v CredentialOAuthRefresh) *string { return v.Resource }).(pulumi.StringPtrOutput)
+}
+
+// The space-separated OAuth scopes requested when refreshing.
+func (o CredentialOAuthRefreshOutput) Scope() pulumi.StringPtrOutput {
+	return o.ApplyT(func(v CredentialOAuthRefresh) *string { return v.Scope }).(pulumi.StringPtrOutput)
+}
+
+// The HTTPS token endpoint the refresh token is exchanged at. Changing it replaces the credential.
+func (o CredentialOAuthRefreshOutput) TokenEndpoint() pulumi.StringOutput {
+	return o.ApplyT(func(v CredentialOAuthRefresh) string { return v.TokenEndpoint }).(pulumi.StringOutput)
+}
+
+// How the client authenticates to the token endpoint.
+func (o CredentialOAuthRefreshOutput) TokenEndpointAuth() CredentialTokenEndpointAuthOutput {
+	return o.ApplyT(func(v CredentialOAuthRefresh) CredentialTokenEndpointAuth { return v.TokenEndpointAuth }).(CredentialTokenEndpointAuthOutput)
+}
+
+type CredentialOAuthRefreshPtrOutput struct{ *pulumi.OutputState }
+
+func (CredentialOAuthRefreshPtrOutput) ElementType() reflect.Type {
+	return reflect.TypeOf((**CredentialOAuthRefresh)(nil)).Elem()
+}
+
+func (o CredentialOAuthRefreshPtrOutput) ToCredentialOAuthRefreshPtrOutput() CredentialOAuthRefreshPtrOutput {
+	return o
+}
+
+func (o CredentialOAuthRefreshPtrOutput) ToCredentialOAuthRefreshPtrOutputWithContext(ctx context.Context) CredentialOAuthRefreshPtrOutput {
+	return o
+}
+
+func (o CredentialOAuthRefreshPtrOutput) Elem() CredentialOAuthRefreshOutput {
+	return o.ApplyT(func(v *CredentialOAuthRefresh) CredentialOAuthRefresh {
+		if v != nil {
+			return *v
+		}
+		var ret CredentialOAuthRefresh
+		return ret
+	}).(CredentialOAuthRefreshOutput)
+}
+
+// The OAuth client ID used to request a new token. Changing it replaces the credential.
+func (o CredentialOAuthRefreshPtrOutput) ClientId() pulumi.StringPtrOutput {
+	return o.ApplyT(func(v *CredentialOAuthRefresh) *string {
+		if v == nil {
+			return nil
+		}
+		return &v.ClientId
+	}).(pulumi.StringPtrOutput)
+}
+
+// The OAuth refresh token. Changing it rotates the token in place.
+func (o CredentialOAuthRefreshPtrOutput) RefreshToken() pulumi.StringPtrOutput {
+	return o.ApplyT(func(v *CredentialOAuthRefresh) *string {
+		if v == nil {
+			return nil
+		}
+		return &v.RefreshToken
+	}).(pulumi.StringPtrOutput)
+}
+
+// The resource URI sent when refreshing, if the server requires one. Changing it replaces the credential.
+func (o CredentialOAuthRefreshPtrOutput) Resource() pulumi.StringPtrOutput {
+	return o.ApplyT(func(v *CredentialOAuthRefresh) *string {
+		if v == nil {
+			return nil
+		}
+		return v.Resource
+	}).(pulumi.StringPtrOutput)
+}
+
+// The space-separated OAuth scopes requested when refreshing.
+func (o CredentialOAuthRefreshPtrOutput) Scope() pulumi.StringPtrOutput {
+	return o.ApplyT(func(v *CredentialOAuthRefresh) *string {
+		if v == nil {
+			return nil
+		}
+		return v.Scope
+	}).(pulumi.StringPtrOutput)
+}
+
+// The HTTPS token endpoint the refresh token is exchanged at. Changing it replaces the credential.
+func (o CredentialOAuthRefreshPtrOutput) TokenEndpoint() pulumi.StringPtrOutput {
+	return o.ApplyT(func(v *CredentialOAuthRefresh) *string {
+		if v == nil {
+			return nil
+		}
+		return &v.TokenEndpoint
+	}).(pulumi.StringPtrOutput)
+}
+
+// How the client authenticates to the token endpoint.
+func (o CredentialOAuthRefreshPtrOutput) TokenEndpointAuth() CredentialTokenEndpointAuthPtrOutput {
+	return o.ApplyT(func(v *CredentialOAuthRefresh) *CredentialTokenEndpointAuth {
+		if v == nil {
+			return nil
+		}
+		return &v.TokenEndpointAuth
+	}).(CredentialTokenEndpointAuthPtrOutput)
+}
+
+type CredentialTokenEndpointAuth struct {
+	// `client_secret_basic` and `client_secret_post`: the OAuth client secret. Required. Changing it rotates the secret in place.
+	ClientSecret *string `pulumi:"clientSecret"`
+	// How the client authenticates: `none` sends only the client ID, `client_secret_basic` sends the client secret with HTTP Basic authentication, and `client_secret_post` sends it in the request body. Changing it replaces the credential.
+	Type TokenEndpointAuthType `pulumi:"type"`
+}
+
+// CredentialTokenEndpointAuthInput is an input type that accepts CredentialTokenEndpointAuthArgs and CredentialTokenEndpointAuthOutput values.
+// You can construct a concrete instance of `CredentialTokenEndpointAuthInput` via:
+//
+//	CredentialTokenEndpointAuthArgs{...}
+type CredentialTokenEndpointAuthInput interface {
+	pulumi.Input
+
+	ToCredentialTokenEndpointAuthOutput() CredentialTokenEndpointAuthOutput
+	ToCredentialTokenEndpointAuthOutputWithContext(context.Context) CredentialTokenEndpointAuthOutput
+}
+
+type CredentialTokenEndpointAuthArgs struct {
+	// `client_secret_basic` and `client_secret_post`: the OAuth client secret. Required. Changing it rotates the secret in place.
+	ClientSecret pulumi.StringPtrInput `pulumi:"clientSecret"`
+	// How the client authenticates: `none` sends only the client ID, `client_secret_basic` sends the client secret with HTTP Basic authentication, and `client_secret_post` sends it in the request body. Changing it replaces the credential.
+	Type TokenEndpointAuthTypeInput `pulumi:"type"`
+}
+
+func (CredentialTokenEndpointAuthArgs) ElementType() reflect.Type {
+	return reflect.TypeOf((*CredentialTokenEndpointAuth)(nil)).Elem()
+}
+
+func (i CredentialTokenEndpointAuthArgs) ToCredentialTokenEndpointAuthOutput() CredentialTokenEndpointAuthOutput {
+	return i.ToCredentialTokenEndpointAuthOutputWithContext(context.Background())
+}
+
+func (i CredentialTokenEndpointAuthArgs) ToCredentialTokenEndpointAuthOutputWithContext(ctx context.Context) CredentialTokenEndpointAuthOutput {
+	return pulumi.ToOutputWithContext(ctx, i).(CredentialTokenEndpointAuthOutput)
+}
+
+func (i CredentialTokenEndpointAuthArgs) ToCredentialTokenEndpointAuthPtrOutput() CredentialTokenEndpointAuthPtrOutput {
+	return i.ToCredentialTokenEndpointAuthPtrOutputWithContext(context.Background())
+}
+
+func (i CredentialTokenEndpointAuthArgs) ToCredentialTokenEndpointAuthPtrOutputWithContext(ctx context.Context) CredentialTokenEndpointAuthPtrOutput {
+	return pulumi.ToOutputWithContext(ctx, i).(CredentialTokenEndpointAuthOutput).ToCredentialTokenEndpointAuthPtrOutputWithContext(ctx)
+}
+
+// CredentialTokenEndpointAuthPtrInput is an input type that accepts CredentialTokenEndpointAuthArgs, CredentialTokenEndpointAuthPtr and CredentialTokenEndpointAuthPtrOutput values.
+// You can construct a concrete instance of `CredentialTokenEndpointAuthPtrInput` via:
+//
+//	        CredentialTokenEndpointAuthArgs{...}
+//
+//	or:
+//
+//	        nil
+type CredentialTokenEndpointAuthPtrInput interface {
+	pulumi.Input
+
+	ToCredentialTokenEndpointAuthPtrOutput() CredentialTokenEndpointAuthPtrOutput
+	ToCredentialTokenEndpointAuthPtrOutputWithContext(context.Context) CredentialTokenEndpointAuthPtrOutput
+}
+
+type credentialTokenEndpointAuthPtrType CredentialTokenEndpointAuthArgs
+
+func CredentialTokenEndpointAuthPtr(v *CredentialTokenEndpointAuthArgs) CredentialTokenEndpointAuthPtrInput {
+	return (*credentialTokenEndpointAuthPtrType)(v)
+}
+
+func (*credentialTokenEndpointAuthPtrType) ElementType() reflect.Type {
+	return reflect.TypeOf((**CredentialTokenEndpointAuth)(nil)).Elem()
+}
+
+func (i *credentialTokenEndpointAuthPtrType) ToCredentialTokenEndpointAuthPtrOutput() CredentialTokenEndpointAuthPtrOutput {
+	return i.ToCredentialTokenEndpointAuthPtrOutputWithContext(context.Background())
+}
+
+func (i *credentialTokenEndpointAuthPtrType) ToCredentialTokenEndpointAuthPtrOutputWithContext(ctx context.Context) CredentialTokenEndpointAuthPtrOutput {
+	return pulumi.ToOutputWithContext(ctx, i).(CredentialTokenEndpointAuthPtrOutput)
+}
+
+type CredentialTokenEndpointAuthOutput struct{ *pulumi.OutputState }
+
+func (CredentialTokenEndpointAuthOutput) ElementType() reflect.Type {
+	return reflect.TypeOf((*CredentialTokenEndpointAuth)(nil)).Elem()
+}
+
+func (o CredentialTokenEndpointAuthOutput) ToCredentialTokenEndpointAuthOutput() CredentialTokenEndpointAuthOutput {
+	return o
+}
+
+func (o CredentialTokenEndpointAuthOutput) ToCredentialTokenEndpointAuthOutputWithContext(ctx context.Context) CredentialTokenEndpointAuthOutput {
+	return o
+}
+
+func (o CredentialTokenEndpointAuthOutput) ToCredentialTokenEndpointAuthPtrOutput() CredentialTokenEndpointAuthPtrOutput {
+	return o.ToCredentialTokenEndpointAuthPtrOutputWithContext(context.Background())
+}
+
+func (o CredentialTokenEndpointAuthOutput) ToCredentialTokenEndpointAuthPtrOutputWithContext(ctx context.Context) CredentialTokenEndpointAuthPtrOutput {
+	return o.ApplyTWithContext(ctx, func(_ context.Context, v CredentialTokenEndpointAuth) *CredentialTokenEndpointAuth {
+		return &v
+	}).(CredentialTokenEndpointAuthPtrOutput)
+}
+
+// `client_secret_basic` and `client_secret_post`: the OAuth client secret. Required. Changing it rotates the secret in place.
+func (o CredentialTokenEndpointAuthOutput) ClientSecret() pulumi.StringPtrOutput {
+	return o.ApplyT(func(v CredentialTokenEndpointAuth) *string { return v.ClientSecret }).(pulumi.StringPtrOutput)
+}
+
+// How the client authenticates: `none` sends only the client ID, `client_secret_basic` sends the client secret with HTTP Basic authentication, and `client_secret_post` sends it in the request body. Changing it replaces the credential.
+func (o CredentialTokenEndpointAuthOutput) Type() TokenEndpointAuthTypeOutput {
+	return o.ApplyT(func(v CredentialTokenEndpointAuth) TokenEndpointAuthType { return v.Type }).(TokenEndpointAuthTypeOutput)
+}
+
+type CredentialTokenEndpointAuthPtrOutput struct{ *pulumi.OutputState }
+
+func (CredentialTokenEndpointAuthPtrOutput) ElementType() reflect.Type {
+	return reflect.TypeOf((**CredentialTokenEndpointAuth)(nil)).Elem()
+}
+
+func (o CredentialTokenEndpointAuthPtrOutput) ToCredentialTokenEndpointAuthPtrOutput() CredentialTokenEndpointAuthPtrOutput {
+	return o
+}
+
+func (o CredentialTokenEndpointAuthPtrOutput) ToCredentialTokenEndpointAuthPtrOutputWithContext(ctx context.Context) CredentialTokenEndpointAuthPtrOutput {
+	return o
+}
+
+func (o CredentialTokenEndpointAuthPtrOutput) Elem() CredentialTokenEndpointAuthOutput {
+	return o.ApplyT(func(v *CredentialTokenEndpointAuth) CredentialTokenEndpointAuth {
+		if v != nil {
+			return *v
+		}
+		var ret CredentialTokenEndpointAuth
+		return ret
+	}).(CredentialTokenEndpointAuthOutput)
+}
+
+// `client_secret_basic` and `client_secret_post`: the OAuth client secret. Required. Changing it rotates the secret in place.
+func (o CredentialTokenEndpointAuthPtrOutput) ClientSecret() pulumi.StringPtrOutput {
+	return o.ApplyT(func(v *CredentialTokenEndpointAuth) *string {
+		if v == nil {
+			return nil
+		}
+		return v.ClientSecret
+	}).(pulumi.StringPtrOutput)
+}
+
+// How the client authenticates: `none` sends only the client ID, `client_secret_basic` sends the client secret with HTTP Basic authentication, and `client_secret_post` sends it in the request body. Changing it replaces the credential.
+func (o CredentialTokenEndpointAuthPtrOutput) Type() TokenEndpointAuthTypePtrOutput {
+	return o.ApplyT(func(v *CredentialTokenEndpointAuth) *TokenEndpointAuthType {
+		if v == nil {
+			return nil
+		}
+		return &v.Type
+	}).(TokenEndpointAuthTypePtrOutput)
+}
+
 // The execution environment of a session. `type` selects the kind of environment; each other property applies only to the environment types named in its description.
 type EnvironmentConfig struct {
 	// `openai_hosted` and `self_hosted` environments: capability directories.
@@ -3109,6 +3780,13 @@ func init() {
 	pulumi.RegisterInputType(reflect.TypeOf((*AgentWebSearchLocationInput)(nil)).Elem(), AgentWebSearchLocationArgs{})
 	pulumi.RegisterInputType(reflect.TypeOf((*AgentWebSearchLocationPtrInput)(nil)).Elem(), AgentWebSearchLocationArgs{})
 	pulumi.RegisterInputType(reflect.TypeOf((*AutomationTargetInput)(nil)).Elem(), AutomationTargetArgs{})
+	pulumi.RegisterInputType(reflect.TypeOf((*CredentialAuthInput)(nil)).Elem(), CredentialAuthArgs{})
+	pulumi.RegisterInputType(reflect.TypeOf((*CredentialNetworkingInput)(nil)).Elem(), CredentialNetworkingArgs{})
+	pulumi.RegisterInputType(reflect.TypeOf((*CredentialNetworkingPtrInput)(nil)).Elem(), CredentialNetworkingArgs{})
+	pulumi.RegisterInputType(reflect.TypeOf((*CredentialOAuthRefreshInput)(nil)).Elem(), CredentialOAuthRefreshArgs{})
+	pulumi.RegisterInputType(reflect.TypeOf((*CredentialOAuthRefreshPtrInput)(nil)).Elem(), CredentialOAuthRefreshArgs{})
+	pulumi.RegisterInputType(reflect.TypeOf((*CredentialTokenEndpointAuthInput)(nil)).Elem(), CredentialTokenEndpointAuthArgs{})
+	pulumi.RegisterInputType(reflect.TypeOf((*CredentialTokenEndpointAuthPtrInput)(nil)).Elem(), CredentialTokenEndpointAuthArgs{})
 	pulumi.RegisterInputType(reflect.TypeOf((*EnvironmentConfigInput)(nil)).Elem(), EnvironmentConfigArgs{})
 	pulumi.RegisterInputType(reflect.TypeOf((*EnvironmentDesktopInput)(nil)).Elem(), EnvironmentDesktopArgs{})
 	pulumi.RegisterInputType(reflect.TypeOf((*EnvironmentDesktopPtrInput)(nil)).Elem(), EnvironmentDesktopArgs{})
@@ -3148,6 +3826,13 @@ func init() {
 	pulumi.RegisterOutputType(AgentWebSearchLocationPtrOutput{})
 	pulumi.RegisterOutputType(AutomationCreatedByOutput{})
 	pulumi.RegisterOutputType(AutomationTargetOutput{})
+	pulumi.RegisterOutputType(CredentialAuthOutput{})
+	pulumi.RegisterOutputType(CredentialNetworkingOutput{})
+	pulumi.RegisterOutputType(CredentialNetworkingPtrOutput{})
+	pulumi.RegisterOutputType(CredentialOAuthRefreshOutput{})
+	pulumi.RegisterOutputType(CredentialOAuthRefreshPtrOutput{})
+	pulumi.RegisterOutputType(CredentialTokenEndpointAuthOutput{})
+	pulumi.RegisterOutputType(CredentialTokenEndpointAuthPtrOutput{})
 	pulumi.RegisterOutputType(EnvironmentConfigOutput{})
 	pulumi.RegisterOutputType(EnvironmentDesktopOutput{})
 	pulumi.RegisterOutputType(EnvironmentDesktopPtrOutput{})

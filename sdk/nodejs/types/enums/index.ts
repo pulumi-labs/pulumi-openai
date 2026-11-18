@@ -17,6 +17,30 @@ export const ContainerSize = {
 
 export type ContainerSize = (typeof ContainerSize)[keyof typeof ContainerSize];
 
+export const CredentialAuthType = {
+    /**
+     * An OAuth access token for an MCP server, optionally refreshed by OpenAI.
+     */
+    McpOAuth: "mcp_oauth",
+    /**
+     * A bearer token for an MCP server.
+     */
+    StaticBearer: "static_bearer",
+    /**
+     * A secret exposed to OpenAI-hosted environments as an environment variable placeholder.
+     */
+    EnvironmentVariable: "environment_variable",
+} as const;
+
+export type CredentialAuthType = (typeof CredentialAuthType)[keyof typeof CredentialAuthType];
+
+export const CredentialNetworkingType = {
+    Limited: "limited",
+    Unrestricted: "unrestricted",
+} as const;
+
+export type CredentialNetworkingType = (typeof CredentialNetworkingType)[keyof typeof CredentialNetworkingType];
+
 export const EnvironmentFileType = {
     FileID: "file_id",
     Inline: "inline",
@@ -115,6 +139,14 @@ export const TextVerbosity = {
 } as const;
 
 export type TextVerbosity = (typeof TextVerbosity)[keyof typeof TextVerbosity];
+
+export const TokenEndpointAuthType = {
+    None: "none",
+    ClientSecretBasic: "client_secret_basic",
+    ClientSecretPost: "client_secret_post",
+} as const;
+
+export type TokenEndpointAuthType = (typeof TokenEndpointAuthType)[keyof typeof TokenEndpointAuthType];
 
 export const ToolType = {
     /**

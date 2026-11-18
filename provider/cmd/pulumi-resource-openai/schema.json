@@ -386,6 +386,159 @@
         }
       ]
     },
+    "openai:index:CredentialAuth": {
+      "description": "How a credential authenticates. `type` selects the kind of credential; each other property applies only to the credential types named in its description. Secrets are write-only: the API never returns them, so they are not refreshed.",
+      "properties": {
+        "accessToken": {
+          "type": "string",
+          "description": "`mcp_oauth` credentials: the OAuth access token. Required. Changing it rotates the token in place.",
+          "secret": true
+        },
+        "expiresAt": {
+          "type": "string",
+          "description": "`mcp_oauth` credentials: when the access token expires, as an RFC 3339 timestamp, if known. OpenAI updates the expiry when it refreshes the token; that is not reported as drift."
+        },
+        "mcpServerUrl": {
+          "type": "string",
+          "description": "`mcp_oauth` and `static_bearer` credentials: the HTTPS URL of the MCP server the credential authorizes. Required. An MCP tool uses the credential whose server URL matches, or the one its `credentialId` names. Changing it replaces the credential."
+        },
+        "networking": {
+          "$ref": "#/types/openai:index:CredentialNetworking",
+          "description": "`environment_variable` credentials: where the secret may be sent. Required. Changing it replaces the credential."
+        },
+        "refresh": {
+          "$ref": "#/types/openai:index:CredentialOAuthRefresh",
+          "description": "`mcp_oauth` credentials: how OpenAI refreshes the access token. When unset, the token is not refreshed. Adding or removing it replaces the credential."
+        },
+        "secretName": {
+          "type": "string",
+          "description": "`environment_variable` credentials: the name of the environment variable that receives a placeholder for the secret. Required. Use ASCII letters, digits and underscores, starting with a letter or underscore; names starting with `CODEX_` are reserved. It must be unique among the vault's environment variable credentials. Changing it replaces the credential."
+        },
+        "secretValue": {
+          "type": "string",
+          "description": "`environment_variable` credentials: the secret. Required. It must not contain carriage returns, newlines or NUL bytes. Sandbox code only sees a placeholder; OpenAI's egress proxy substitutes the secret in requests to allowed hosts. Changing it rotates the secret in place, for sessions created afterwards.",
+          "secret": true
+        },
+        "token": {
+          "type": "string",
+          "description": "`static_bearer` credentials: the bearer token, which is not refreshed automatically. Required. Changing it rotates the token in place.",
+          "secret": true
+        },
+        "type": {
+          "$ref": "#/types/openai:index:CredentialAuthType",
+          "description": "The kind of credential. It cannot be changed: changing it replaces the credential."
+        }
+      },
+      "type": "object",
+      "required": [
+        "type"
+      ]
+    },
+    "openai:index:CredentialAuthType": {
+      "type": "string",
+      "enum": [
+        {
+          "name": "McpOAuth",
+          "description": "An OAuth access token for an MCP server, optionally refreshed by OpenAI.",
+          "value": "mcp_oauth"
+        },
+        {
+          "name": "StaticBearer",
+          "description": "A bearer token for an MCP server.",
+          "value": "static_bearer"
+        },
+        {
+          "name": "EnvironmentVariable",
+          "description": "A secret exposed to OpenAI-hosted environments as an environment variable placeholder.",
+          "value": "environment_variable"
+        }
+      ]
+    },
+    "openai:index:CredentialNetworking": {
+      "properties": {
+        "allowedHosts": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "`limited` networking: the hosts the secret may be sent to, 1 to 16 lowercase host names or IPv4 addresses, without a scheme, path, port or wildcard. They must also be allowed by the session's network policy. Required."
+        },
+        "type": {
+          "$ref": "#/types/openai:index:CredentialNetworkingType",
+          "description": "`limited` sends the secret only to `allowedHosts`. `unrestricted` sends it to any host the session's network policy allows, which must then be `restricted` with explicit allowed domains."
+        }
+      },
+      "type": "object",
+      "required": [
+        "type"
+      ]
+    },
+    "openai:index:CredentialNetworkingType": {
+      "type": "string",
+      "enum": [
+        {
+          "name": "Limited",
+          "value": "limited"
+        },
+        {
+          "name": "Unrestricted",
+          "value": "unrestricted"
+        }
+      ]
+    },
+    "openai:index:CredentialOAuthRefresh": {
+      "properties": {
+        "clientId": {
+          "type": "string",
+          "description": "The OAuth client ID used to request a new token. Changing it replaces the credential."
+        },
+        "refreshToken": {
+          "type": "string",
+          "description": "The OAuth refresh token. Changing it rotates the token in place.",
+          "secret": true
+        },
+        "resource": {
+          "type": "string",
+          "description": "The resource URI sent when refreshing, if the server requires one. Changing it replaces the credential."
+        },
+        "scope": {
+          "type": "string",
+          "description": "The space-separated OAuth scopes requested when refreshing."
+        },
+        "tokenEndpoint": {
+          "type": "string",
+          "description": "The HTTPS token endpoint the refresh token is exchanged at. Changing it replaces the credential."
+        },
+        "tokenEndpointAuth": {
+          "$ref": "#/types/openai:index:CredentialTokenEndpointAuth",
+          "description": "How the client authenticates to the token endpoint."
+        }
+      },
+      "type": "object",
+      "required": [
+        "clientId",
+        "refreshToken",
+        "tokenEndpoint",
+        "tokenEndpointAuth"
+      ]
+    },
+    "openai:index:CredentialTokenEndpointAuth": {
+      "properties": {
+        "clientSecret": {
+          "type": "string",
+          "description": "`client_secret_basic` and `client_secret_post`: the OAuth client secret. Required. Changing it rotates the secret in place.",
+          "secret": true
+        },
+        "type": {
+          "$ref": "#/types/openai:index:TokenEndpointAuthType",
+          "description": "How the client authenticates: `none` sends only the client ID, `client_secret_basic` sends the client secret with HTTP Basic authentication, and `client_secret_post` sends it in the request body. Changing it replaces the credential."
+        }
+      },
+      "type": "object",
+      "required": [
+        "type"
+      ]
+    },
     "openai:index:EnvironmentConfig": {
       "description": "The execution environment of a session. `type` selects the kind of environment; each other property applies only to the environment types named in its description.",
       "properties": {
@@ -863,6 +1016,23 @@
         }
       ]
     },
+    "openai:index:TokenEndpointAuthType": {
+      "type": "string",
+      "enum": [
+        {
+          "name": "None",
+          "value": "none"
+        },
+        {
+          "name": "ClientSecretBasic",
+          "value": "client_secret_basic"
+        },
+        {
+          "name": "ClientSecretPost",
+          "value": "client_secret_post"
+        }
+      ]
+    },
     "openai:index:ToolType": {
       "type": "string",
       "enum": [
@@ -1254,6 +1424,111 @@
         "expression",
         "timezone",
         "target"
+      ]
+    },
+    "openai:index:Vault": {
+      "description": "A vault: a store of credentials that sessions use without the secrets appearing in an agent's configuration. Add credentials to it with the `VaultCredential` resource, and make it available to the sessions an automation starts with `target.vaultIds`.\n\nDeleting a vault also deletes all of its credentials.\n\nThis resource uses the beta Agents API.",
+      "properties": {
+        "createdAt": {
+          "type": "integer",
+          "description": "When the vault was created, as a Unix timestamp in seconds."
+        },
+        "metadata": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          },
+          "description": "Up to 16 custom key-value pairs, such as an application or team identifier. Keys can be up to 64 characters and values up to 512 characters."
+        },
+        "name": {
+          "type": "string",
+          "description": "A human-readable name for the vault, 1 to 256 bytes once leading and trailing whitespace is trimmed."
+        }
+      },
+      "required": [
+        "createdAt"
+      ],
+      "inputProperties": {
+        "metadata": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          },
+          "description": "Up to 16 custom key-value pairs, such as an application or team identifier. Keys can be up to 64 characters and values up to 512 characters."
+        },
+        "name": {
+          "type": "string",
+          "description": "A human-readable name for the vault, 1 to 256 bytes once leading and trailing whitespace is trimmed."
+        }
+      }
+    },
+    "openai:index:VaultCredential": {
+      "description": "A credential stored in a vault: a token for an MCP server, or a secret exposed to OpenAI-hosted environments as an environment variable. Sessions use the credentials of the vaults attached to them; an MCP tool can pick one with `credentialId`.\n\nSecrets can be rotated in place. Everything else about how the credential authenticates is fixed once it is created, so changing it replaces the credential.\n\nImport a credential with an ID of the form `<vaultId>/<credentialId>`.\n\nThis resource uses the beta Agents API.",
+      "properties": {
+        "auth": {
+          "$ref": "#/types/openai:index:CredentialAuth",
+          "description": "How the credential authenticates, and its secrets."
+        },
+        "createdAt": {
+          "type": "integer",
+          "description": "When the credential was created, as a Unix timestamp in seconds."
+        },
+        "metadata": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          },
+          "description": "Up to 16 custom key-value pairs. Keys can be up to 64 characters and values up to 512 characters."
+        },
+        "name": {
+          "type": "string",
+          "description": "A human-readable name for the credential, 1 to 256 bytes once leading and trailing whitespace is trimmed. Names need not be unique.",
+          "replaceOnChanges": true
+        },
+        "updatedAt": {
+          "type": "integer",
+          "description": "When the credential was last updated, as a Unix timestamp in seconds."
+        },
+        "vaultId": {
+          "type": "string",
+          "description": "The ID of the vault that holds the credential, such as the `id` of a `Vault` resource.",
+          "replaceOnChanges": true
+        }
+      },
+      "required": [
+        "vaultId",
+        "name",
+        "auth",
+        "createdAt",
+        "updatedAt"
+      ],
+      "inputProperties": {
+        "auth": {
+          "$ref": "#/types/openai:index:CredentialAuth",
+          "description": "How the credential authenticates, and its secrets."
+        },
+        "metadata": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          },
+          "description": "Up to 16 custom key-value pairs. Keys can be up to 64 characters and values up to 512 characters."
+        },
+        "name": {
+          "type": "string",
+          "description": "A human-readable name for the credential, 1 to 256 bytes once leading and trailing whitespace is trimmed. Names need not be unique.",
+          "replaceOnChanges": true
+        },
+        "vaultId": {
+          "type": "string",
+          "description": "The ID of the vault that holds the credential, such as the `id` of a `Vault` resource.",
+          "replaceOnChanges": true
+        }
+      },
+      "requiredInputs": [
+        "vaultId",
+        "name",
+        "auth"
       ]
     }
   }

@@ -342,6 +342,341 @@ func (in *containerSizePtr) ToContainerSizePtrOutputWithContext(ctx context.Cont
 	return pulumi.ToOutputWithContext(ctx, in).(ContainerSizePtrOutput)
 }
 
+type CredentialAuthType string
+
+const (
+	// An OAuth access token for an MCP server, optionally refreshed by OpenAI.
+	CredentialAuthTypeMcpOAuth = CredentialAuthType("mcp_oauth")
+	// A bearer token for an MCP server.
+	CredentialAuthTypeStaticBearer = CredentialAuthType("static_bearer")
+	// A secret exposed to OpenAI-hosted environments as an environment variable placeholder.
+	CredentialAuthTypeEnvironmentVariable = CredentialAuthType("environment_variable")
+)
+
+func (CredentialAuthType) ElementType() reflect.Type {
+	return reflect.TypeOf((*CredentialAuthType)(nil)).Elem()
+}
+
+func (e CredentialAuthType) ToCredentialAuthTypeOutput() CredentialAuthTypeOutput {
+	return pulumi.ToOutput(e).(CredentialAuthTypeOutput)
+}
+
+func (e CredentialAuthType) ToCredentialAuthTypeOutputWithContext(ctx context.Context) CredentialAuthTypeOutput {
+	return pulumi.ToOutputWithContext(ctx, e).(CredentialAuthTypeOutput)
+}
+
+func (e CredentialAuthType) ToCredentialAuthTypePtrOutput() CredentialAuthTypePtrOutput {
+	return e.ToCredentialAuthTypePtrOutputWithContext(context.Background())
+}
+
+func (e CredentialAuthType) ToCredentialAuthTypePtrOutputWithContext(ctx context.Context) CredentialAuthTypePtrOutput {
+	return CredentialAuthType(e).ToCredentialAuthTypeOutputWithContext(ctx).ToCredentialAuthTypePtrOutputWithContext(ctx)
+}
+
+func (e CredentialAuthType) ToStringOutput() pulumi.StringOutput {
+	return pulumi.ToOutput(pulumi.String(e)).(pulumi.StringOutput)
+}
+
+func (e CredentialAuthType) ToStringOutputWithContext(ctx context.Context) pulumi.StringOutput {
+	return pulumi.ToOutputWithContext(ctx, pulumi.String(e)).(pulumi.StringOutput)
+}
+
+func (e CredentialAuthType) ToStringPtrOutput() pulumi.StringPtrOutput {
+	return pulumi.String(e).ToStringPtrOutputWithContext(context.Background())
+}
+
+func (e CredentialAuthType) ToStringPtrOutputWithContext(ctx context.Context) pulumi.StringPtrOutput {
+	return pulumi.String(e).ToStringOutputWithContext(ctx).ToStringPtrOutputWithContext(ctx)
+}
+
+type CredentialAuthTypeOutput struct{ *pulumi.OutputState }
+
+func (CredentialAuthTypeOutput) ElementType() reflect.Type {
+	return reflect.TypeOf((*CredentialAuthType)(nil)).Elem()
+}
+
+func (o CredentialAuthTypeOutput) ToCredentialAuthTypeOutput() CredentialAuthTypeOutput {
+	return o
+}
+
+func (o CredentialAuthTypeOutput) ToCredentialAuthTypeOutputWithContext(ctx context.Context) CredentialAuthTypeOutput {
+	return o
+}
+
+func (o CredentialAuthTypeOutput) ToCredentialAuthTypePtrOutput() CredentialAuthTypePtrOutput {
+	return o.ToCredentialAuthTypePtrOutputWithContext(context.Background())
+}
+
+func (o CredentialAuthTypeOutput) ToCredentialAuthTypePtrOutputWithContext(ctx context.Context) CredentialAuthTypePtrOutput {
+	return o.ApplyTWithContext(ctx, func(_ context.Context, v CredentialAuthType) *CredentialAuthType {
+		return &v
+	}).(CredentialAuthTypePtrOutput)
+}
+
+func (o CredentialAuthTypeOutput) ToStringOutput() pulumi.StringOutput {
+	return o.ToStringOutputWithContext(context.Background())
+}
+
+func (o CredentialAuthTypeOutput) ToStringOutputWithContext(ctx context.Context) pulumi.StringOutput {
+	return o.ApplyTWithContext(ctx, func(_ context.Context, e CredentialAuthType) string {
+		return string(e)
+	}).(pulumi.StringOutput)
+}
+
+func (o CredentialAuthTypeOutput) ToStringPtrOutput() pulumi.StringPtrOutput {
+	return o.ToStringPtrOutputWithContext(context.Background())
+}
+
+func (o CredentialAuthTypeOutput) ToStringPtrOutputWithContext(ctx context.Context) pulumi.StringPtrOutput {
+	return o.ApplyTWithContext(ctx, func(_ context.Context, e CredentialAuthType) *string {
+		v := string(e)
+		return &v
+	}).(pulumi.StringPtrOutput)
+}
+
+type CredentialAuthTypePtrOutput struct{ *pulumi.OutputState }
+
+func (CredentialAuthTypePtrOutput) ElementType() reflect.Type {
+	return reflect.TypeOf((**CredentialAuthType)(nil)).Elem()
+}
+
+func (o CredentialAuthTypePtrOutput) ToCredentialAuthTypePtrOutput() CredentialAuthTypePtrOutput {
+	return o
+}
+
+func (o CredentialAuthTypePtrOutput) ToCredentialAuthTypePtrOutputWithContext(ctx context.Context) CredentialAuthTypePtrOutput {
+	return o
+}
+
+func (o CredentialAuthTypePtrOutput) Elem() CredentialAuthTypeOutput {
+	return o.ApplyT(func(v *CredentialAuthType) CredentialAuthType {
+		if v != nil {
+			return *v
+		}
+		var ret CredentialAuthType
+		return ret
+	}).(CredentialAuthTypeOutput)
+}
+
+func (o CredentialAuthTypePtrOutput) ToStringPtrOutput() pulumi.StringPtrOutput {
+	return o.ToStringPtrOutputWithContext(context.Background())
+}
+
+func (o CredentialAuthTypePtrOutput) ToStringPtrOutputWithContext(ctx context.Context) pulumi.StringPtrOutput {
+	return o.ApplyTWithContext(ctx, func(_ context.Context, e *CredentialAuthType) *string {
+		if e == nil {
+			return nil
+		}
+		v := string(*e)
+		return &v
+	}).(pulumi.StringPtrOutput)
+}
+
+// CredentialAuthTypeInput is an input type that accepts values of the CredentialAuthType enum
+// A concrete instance of `CredentialAuthTypeInput` can be one of the following:
+//
+//	CredentialAuthTypeMcpOAuth
+//	CredentialAuthTypeStaticBearer
+//	CredentialAuthTypeEnvironmentVariable
+type CredentialAuthTypeInput interface {
+	pulumi.Input
+
+	ToCredentialAuthTypeOutput() CredentialAuthTypeOutput
+	ToCredentialAuthTypeOutputWithContext(context.Context) CredentialAuthTypeOutput
+}
+
+var credentialAuthTypePtrType = reflect.TypeOf((**CredentialAuthType)(nil)).Elem()
+
+type CredentialAuthTypePtrInput interface {
+	pulumi.Input
+
+	ToCredentialAuthTypePtrOutput() CredentialAuthTypePtrOutput
+	ToCredentialAuthTypePtrOutputWithContext(context.Context) CredentialAuthTypePtrOutput
+}
+
+type credentialAuthTypePtr string
+
+func CredentialAuthTypePtr(v string) CredentialAuthTypePtrInput {
+	return (*credentialAuthTypePtr)(&v)
+}
+
+func (*credentialAuthTypePtr) ElementType() reflect.Type {
+	return credentialAuthTypePtrType
+}
+
+func (in *credentialAuthTypePtr) ToCredentialAuthTypePtrOutput() CredentialAuthTypePtrOutput {
+	return pulumi.ToOutput(in).(CredentialAuthTypePtrOutput)
+}
+
+func (in *credentialAuthTypePtr) ToCredentialAuthTypePtrOutputWithContext(ctx context.Context) CredentialAuthTypePtrOutput {
+	return pulumi.ToOutputWithContext(ctx, in).(CredentialAuthTypePtrOutput)
+}
+
+type CredentialNetworkingType string
+
+const (
+	CredentialNetworkingTypeLimited      = CredentialNetworkingType("limited")
+	CredentialNetworkingTypeUnrestricted = CredentialNetworkingType("unrestricted")
+)
+
+func (CredentialNetworkingType) ElementType() reflect.Type {
+	return reflect.TypeOf((*CredentialNetworkingType)(nil)).Elem()
+}
+
+func (e CredentialNetworkingType) ToCredentialNetworkingTypeOutput() CredentialNetworkingTypeOutput {
+	return pulumi.ToOutput(e).(CredentialNetworkingTypeOutput)
+}
+
+func (e CredentialNetworkingType) ToCredentialNetworkingTypeOutputWithContext(ctx context.Context) CredentialNetworkingTypeOutput {
+	return pulumi.ToOutputWithContext(ctx, e).(CredentialNetworkingTypeOutput)
+}
+
+func (e CredentialNetworkingType) ToCredentialNetworkingTypePtrOutput() CredentialNetworkingTypePtrOutput {
+	return e.ToCredentialNetworkingTypePtrOutputWithContext(context.Background())
+}
+
+func (e CredentialNetworkingType) ToCredentialNetworkingTypePtrOutputWithContext(ctx context.Context) CredentialNetworkingTypePtrOutput {
+	return CredentialNetworkingType(e).ToCredentialNetworkingTypeOutputWithContext(ctx).ToCredentialNetworkingTypePtrOutputWithContext(ctx)
+}
+
+func (e CredentialNetworkingType) ToStringOutput() pulumi.StringOutput {
+	return pulumi.ToOutput(pulumi.String(e)).(pulumi.StringOutput)
+}
+
+func (e CredentialNetworkingType) ToStringOutputWithContext(ctx context.Context) pulumi.StringOutput {
+	return pulumi.ToOutputWithContext(ctx, pulumi.String(e)).(pulumi.StringOutput)
+}
+
+func (e CredentialNetworkingType) ToStringPtrOutput() pulumi.StringPtrOutput {
+	return pulumi.String(e).ToStringPtrOutputWithContext(context.Background())
+}
+
+func (e CredentialNetworkingType) ToStringPtrOutputWithContext(ctx context.Context) pulumi.StringPtrOutput {
+	return pulumi.String(e).ToStringOutputWithContext(ctx).ToStringPtrOutputWithContext(ctx)
+}
+
+type CredentialNetworkingTypeOutput struct{ *pulumi.OutputState }
+
+func (CredentialNetworkingTypeOutput) ElementType() reflect.Type {
+	return reflect.TypeOf((*CredentialNetworkingType)(nil)).Elem()
+}
+
+func (o CredentialNetworkingTypeOutput) ToCredentialNetworkingTypeOutput() CredentialNetworkingTypeOutput {
+	return o
+}
+
+func (o CredentialNetworkingTypeOutput) ToCredentialNetworkingTypeOutputWithContext(ctx context.Context) CredentialNetworkingTypeOutput {
+	return o
+}
+
+func (o CredentialNetworkingTypeOutput) ToCredentialNetworkingTypePtrOutput() CredentialNetworkingTypePtrOutput {
+	return o.ToCredentialNetworkingTypePtrOutputWithContext(context.Background())
+}
+
+func (o CredentialNetworkingTypeOutput) ToCredentialNetworkingTypePtrOutputWithContext(ctx context.Context) CredentialNetworkingTypePtrOutput {
+	return o.ApplyTWithContext(ctx, func(_ context.Context, v CredentialNetworkingType) *CredentialNetworkingType {
+		return &v
+	}).(CredentialNetworkingTypePtrOutput)
+}
+
+func (o CredentialNetworkingTypeOutput) ToStringOutput() pulumi.StringOutput {
+	return o.ToStringOutputWithContext(context.Background())
+}
+
+func (o CredentialNetworkingTypeOutput) ToStringOutputWithContext(ctx context.Context) pulumi.StringOutput {
+	return o.ApplyTWithContext(ctx, func(_ context.Context, e CredentialNetworkingType) string {
+		return string(e)
+	}).(pulumi.StringOutput)
+}
+
+func (o CredentialNetworkingTypeOutput) ToStringPtrOutput() pulumi.StringPtrOutput {
+	return o.ToStringPtrOutputWithContext(context.Background())
+}
+
+func (o CredentialNetworkingTypeOutput) ToStringPtrOutputWithContext(ctx context.Context) pulumi.StringPtrOutput {
+	return o.ApplyTWithContext(ctx, func(_ context.Context, e CredentialNetworkingType) *string {
+		v := string(e)
+		return &v
+	}).(pulumi.StringPtrOutput)
+}
+
+type CredentialNetworkingTypePtrOutput struct{ *pulumi.OutputState }
+
+func (CredentialNetworkingTypePtrOutput) ElementType() reflect.Type {
+	return reflect.TypeOf((**CredentialNetworkingType)(nil)).Elem()
+}
+
+func (o CredentialNetworkingTypePtrOutput) ToCredentialNetworkingTypePtrOutput() CredentialNetworkingTypePtrOutput {
+	return o
+}
+
+func (o CredentialNetworkingTypePtrOutput) ToCredentialNetworkingTypePtrOutputWithContext(ctx context.Context) CredentialNetworkingTypePtrOutput {
+	return o
+}
+
+func (o CredentialNetworkingTypePtrOutput) Elem() CredentialNetworkingTypeOutput {
+	return o.ApplyT(func(v *CredentialNetworkingType) CredentialNetworkingType {
+		if v != nil {
+			return *v
+		}
+		var ret CredentialNetworkingType
+		return ret
+	}).(CredentialNetworkingTypeOutput)
+}
+
+func (o CredentialNetworkingTypePtrOutput) ToStringPtrOutput() pulumi.StringPtrOutput {
+	return o.ToStringPtrOutputWithContext(context.Background())
+}
+
+func (o CredentialNetworkingTypePtrOutput) ToStringPtrOutputWithContext(ctx context.Context) pulumi.StringPtrOutput {
+	return o.ApplyTWithContext(ctx, func(_ context.Context, e *CredentialNetworkingType) *string {
+		if e == nil {
+			return nil
+		}
+		v := string(*e)
+		return &v
+	}).(pulumi.StringPtrOutput)
+}
+
+// CredentialNetworkingTypeInput is an input type that accepts values of the CredentialNetworkingType enum
+// A concrete instance of `CredentialNetworkingTypeInput` can be one of the following:
+//
+//	CredentialNetworkingTypeLimited
+//	CredentialNetworkingTypeUnrestricted
+type CredentialNetworkingTypeInput interface {
+	pulumi.Input
+
+	ToCredentialNetworkingTypeOutput() CredentialNetworkingTypeOutput
+	ToCredentialNetworkingTypeOutputWithContext(context.Context) CredentialNetworkingTypeOutput
+}
+
+var credentialNetworkingTypePtrType = reflect.TypeOf((**CredentialNetworkingType)(nil)).Elem()
+
+type CredentialNetworkingTypePtrInput interface {
+	pulumi.Input
+
+	ToCredentialNetworkingTypePtrOutput() CredentialNetworkingTypePtrOutput
+	ToCredentialNetworkingTypePtrOutputWithContext(context.Context) CredentialNetworkingTypePtrOutput
+}
+
+type credentialNetworkingTypePtr string
+
+func CredentialNetworkingTypePtr(v string) CredentialNetworkingTypePtrInput {
+	return (*credentialNetworkingTypePtr)(&v)
+}
+
+func (*credentialNetworkingTypePtr) ElementType() reflect.Type {
+	return credentialNetworkingTypePtrType
+}
+
+func (in *credentialNetworkingTypePtr) ToCredentialNetworkingTypePtrOutput() CredentialNetworkingTypePtrOutput {
+	return pulumi.ToOutput(in).(CredentialNetworkingTypePtrOutput)
+}
+
+func (in *credentialNetworkingTypePtr) ToCredentialNetworkingTypePtrOutputWithContext(ctx context.Context) CredentialNetworkingTypePtrOutput {
+	return pulumi.ToOutputWithContext(ctx, in).(CredentialNetworkingTypePtrOutput)
+}
+
 type EnvironmentFileType string
 
 const (
@@ -2186,6 +2521,173 @@ func (in *textVerbosityPtr) ToTextVerbosityPtrOutputWithContext(ctx context.Cont
 	return pulumi.ToOutputWithContext(ctx, in).(TextVerbosityPtrOutput)
 }
 
+type TokenEndpointAuthType string
+
+const (
+	TokenEndpointAuthTypeNone              = TokenEndpointAuthType("none")
+	TokenEndpointAuthTypeClientSecretBasic = TokenEndpointAuthType("client_secret_basic")
+	TokenEndpointAuthTypeClientSecretPost  = TokenEndpointAuthType("client_secret_post")
+)
+
+func (TokenEndpointAuthType) ElementType() reflect.Type {
+	return reflect.TypeOf((*TokenEndpointAuthType)(nil)).Elem()
+}
+
+func (e TokenEndpointAuthType) ToTokenEndpointAuthTypeOutput() TokenEndpointAuthTypeOutput {
+	return pulumi.ToOutput(e).(TokenEndpointAuthTypeOutput)
+}
+
+func (e TokenEndpointAuthType) ToTokenEndpointAuthTypeOutputWithContext(ctx context.Context) TokenEndpointAuthTypeOutput {
+	return pulumi.ToOutputWithContext(ctx, e).(TokenEndpointAuthTypeOutput)
+}
+
+func (e TokenEndpointAuthType) ToTokenEndpointAuthTypePtrOutput() TokenEndpointAuthTypePtrOutput {
+	return e.ToTokenEndpointAuthTypePtrOutputWithContext(context.Background())
+}
+
+func (e TokenEndpointAuthType) ToTokenEndpointAuthTypePtrOutputWithContext(ctx context.Context) TokenEndpointAuthTypePtrOutput {
+	return TokenEndpointAuthType(e).ToTokenEndpointAuthTypeOutputWithContext(ctx).ToTokenEndpointAuthTypePtrOutputWithContext(ctx)
+}
+
+func (e TokenEndpointAuthType) ToStringOutput() pulumi.StringOutput {
+	return pulumi.ToOutput(pulumi.String(e)).(pulumi.StringOutput)
+}
+
+func (e TokenEndpointAuthType) ToStringOutputWithContext(ctx context.Context) pulumi.StringOutput {
+	return pulumi.ToOutputWithContext(ctx, pulumi.String(e)).(pulumi.StringOutput)
+}
+
+func (e TokenEndpointAuthType) ToStringPtrOutput() pulumi.StringPtrOutput {
+	return pulumi.String(e).ToStringPtrOutputWithContext(context.Background())
+}
+
+func (e TokenEndpointAuthType) ToStringPtrOutputWithContext(ctx context.Context) pulumi.StringPtrOutput {
+	return pulumi.String(e).ToStringOutputWithContext(ctx).ToStringPtrOutputWithContext(ctx)
+}
+
+type TokenEndpointAuthTypeOutput struct{ *pulumi.OutputState }
+
+func (TokenEndpointAuthTypeOutput) ElementType() reflect.Type {
+	return reflect.TypeOf((*TokenEndpointAuthType)(nil)).Elem()
+}
+
+func (o TokenEndpointAuthTypeOutput) ToTokenEndpointAuthTypeOutput() TokenEndpointAuthTypeOutput {
+	return o
+}
+
+func (o TokenEndpointAuthTypeOutput) ToTokenEndpointAuthTypeOutputWithContext(ctx context.Context) TokenEndpointAuthTypeOutput {
+	return o
+}
+
+func (o TokenEndpointAuthTypeOutput) ToTokenEndpointAuthTypePtrOutput() TokenEndpointAuthTypePtrOutput {
+	return o.ToTokenEndpointAuthTypePtrOutputWithContext(context.Background())
+}
+
+func (o TokenEndpointAuthTypeOutput) ToTokenEndpointAuthTypePtrOutputWithContext(ctx context.Context) TokenEndpointAuthTypePtrOutput {
+	return o.ApplyTWithContext(ctx, func(_ context.Context, v TokenEndpointAuthType) *TokenEndpointAuthType {
+		return &v
+	}).(TokenEndpointAuthTypePtrOutput)
+}
+
+func (o TokenEndpointAuthTypeOutput) ToStringOutput() pulumi.StringOutput {
+	return o.ToStringOutputWithContext(context.Background())
+}
+
+func (o TokenEndpointAuthTypeOutput) ToStringOutputWithContext(ctx context.Context) pulumi.StringOutput {
+	return o.ApplyTWithContext(ctx, func(_ context.Context, e TokenEndpointAuthType) string {
+		return string(e)
+	}).(pulumi.StringOutput)
+}
+
+func (o TokenEndpointAuthTypeOutput) ToStringPtrOutput() pulumi.StringPtrOutput {
+	return o.ToStringPtrOutputWithContext(context.Background())
+}
+
+func (o TokenEndpointAuthTypeOutput) ToStringPtrOutputWithContext(ctx context.Context) pulumi.StringPtrOutput {
+	return o.ApplyTWithContext(ctx, func(_ context.Context, e TokenEndpointAuthType) *string {
+		v := string(e)
+		return &v
+	}).(pulumi.StringPtrOutput)
+}
+
+type TokenEndpointAuthTypePtrOutput struct{ *pulumi.OutputState }
+
+func (TokenEndpointAuthTypePtrOutput) ElementType() reflect.Type {
+	return reflect.TypeOf((**TokenEndpointAuthType)(nil)).Elem()
+}
+
+func (o TokenEndpointAuthTypePtrOutput) ToTokenEndpointAuthTypePtrOutput() TokenEndpointAuthTypePtrOutput {
+	return o
+}
+
+func (o TokenEndpointAuthTypePtrOutput) ToTokenEndpointAuthTypePtrOutputWithContext(ctx context.Context) TokenEndpointAuthTypePtrOutput {
+	return o
+}
+
+func (o TokenEndpointAuthTypePtrOutput) Elem() TokenEndpointAuthTypeOutput {
+	return o.ApplyT(func(v *TokenEndpointAuthType) TokenEndpointAuthType {
+		if v != nil {
+			return *v
+		}
+		var ret TokenEndpointAuthType
+		return ret
+	}).(TokenEndpointAuthTypeOutput)
+}
+
+func (o TokenEndpointAuthTypePtrOutput) ToStringPtrOutput() pulumi.StringPtrOutput {
+	return o.ToStringPtrOutputWithContext(context.Background())
+}
+
+func (o TokenEndpointAuthTypePtrOutput) ToStringPtrOutputWithContext(ctx context.Context) pulumi.StringPtrOutput {
+	return o.ApplyTWithContext(ctx, func(_ context.Context, e *TokenEndpointAuthType) *string {
+		if e == nil {
+			return nil
+		}
+		v := string(*e)
+		return &v
+	}).(pulumi.StringPtrOutput)
+}
+
+// TokenEndpointAuthTypeInput is an input type that accepts values of the TokenEndpointAuthType enum
+// A concrete instance of `TokenEndpointAuthTypeInput` can be one of the following:
+//
+//	TokenEndpointAuthTypeNone
+//	TokenEndpointAuthTypeClientSecretBasic
+//	TokenEndpointAuthTypeClientSecretPost
+type TokenEndpointAuthTypeInput interface {
+	pulumi.Input
+
+	ToTokenEndpointAuthTypeOutput() TokenEndpointAuthTypeOutput
+	ToTokenEndpointAuthTypeOutputWithContext(context.Context) TokenEndpointAuthTypeOutput
+}
+
+var tokenEndpointAuthTypePtrType = reflect.TypeOf((**TokenEndpointAuthType)(nil)).Elem()
+
+type TokenEndpointAuthTypePtrInput interface {
+	pulumi.Input
+
+	ToTokenEndpointAuthTypePtrOutput() TokenEndpointAuthTypePtrOutput
+	ToTokenEndpointAuthTypePtrOutputWithContext(context.Context) TokenEndpointAuthTypePtrOutput
+}
+
+type tokenEndpointAuthTypePtr string
+
+func TokenEndpointAuthTypePtr(v string) TokenEndpointAuthTypePtrInput {
+	return (*tokenEndpointAuthTypePtr)(&v)
+}
+
+func (*tokenEndpointAuthTypePtr) ElementType() reflect.Type {
+	return tokenEndpointAuthTypePtrType
+}
+
+func (in *tokenEndpointAuthTypePtr) ToTokenEndpointAuthTypePtrOutput() TokenEndpointAuthTypePtrOutput {
+	return pulumi.ToOutput(in).(TokenEndpointAuthTypePtrOutput)
+}
+
+func (in *tokenEndpointAuthTypePtr) ToTokenEndpointAuthTypePtrOutputWithContext(ctx context.Context) TokenEndpointAuthTypePtrOutput {
+	return pulumi.ToOutputWithContext(ctx, in).(TokenEndpointAuthTypePtrOutput)
+}
+
 type ToolType string
 
 const (
@@ -2707,6 +3209,10 @@ func init() {
 	pulumi.RegisterInputType(reflect.TypeOf((*ConnectionOriginPtrInput)(nil)).Elem(), ConnectionOrigin("service"))
 	pulumi.RegisterInputType(reflect.TypeOf((*ContainerSizeInput)(nil)).Elem(), ContainerSize("small"))
 	pulumi.RegisterInputType(reflect.TypeOf((*ContainerSizePtrInput)(nil)).Elem(), ContainerSize("small"))
+	pulumi.RegisterInputType(reflect.TypeOf((*CredentialAuthTypeInput)(nil)).Elem(), CredentialAuthType("mcp_oauth"))
+	pulumi.RegisterInputType(reflect.TypeOf((*CredentialAuthTypePtrInput)(nil)).Elem(), CredentialAuthType("mcp_oauth"))
+	pulumi.RegisterInputType(reflect.TypeOf((*CredentialNetworkingTypeInput)(nil)).Elem(), CredentialNetworkingType("limited"))
+	pulumi.RegisterInputType(reflect.TypeOf((*CredentialNetworkingTypePtrInput)(nil)).Elem(), CredentialNetworkingType("limited"))
 	pulumi.RegisterInputType(reflect.TypeOf((*EnvironmentFileTypeInput)(nil)).Elem(), EnvironmentFileType("file_id"))
 	pulumi.RegisterInputType(reflect.TypeOf((*EnvironmentFileTypePtrInput)(nil)).Elem(), EnvironmentFileType("file_id"))
 	pulumi.RegisterInputType(reflect.TypeOf((*EnvironmentSkillTypeInput)(nil)).Elem(), EnvironmentSkillType("skill_reference"))
@@ -2729,6 +3235,8 @@ func init() {
 	pulumi.RegisterInputType(reflect.TypeOf((*TextFormatTypePtrInput)(nil)).Elem(), TextFormatType("text"))
 	pulumi.RegisterInputType(reflect.TypeOf((*TextVerbosityInput)(nil)).Elem(), TextVerbosity("low"))
 	pulumi.RegisterInputType(reflect.TypeOf((*TextVerbosityPtrInput)(nil)).Elem(), TextVerbosity("low"))
+	pulumi.RegisterInputType(reflect.TypeOf((*TokenEndpointAuthTypeInput)(nil)).Elem(), TokenEndpointAuthType("none"))
+	pulumi.RegisterInputType(reflect.TypeOf((*TokenEndpointAuthTypePtrInput)(nil)).Elem(), TokenEndpointAuthType("none"))
 	pulumi.RegisterInputType(reflect.TypeOf((*ToolTypeInput)(nil)).Elem(), ToolType("function"))
 	pulumi.RegisterInputType(reflect.TypeOf((*ToolTypePtrInput)(nil)).Elem(), ToolType("function"))
 	pulumi.RegisterInputType(reflect.TypeOf((*WebSearchContextSizeInput)(nil)).Elem(), WebSearchContextSize("low"))
@@ -2739,6 +3247,10 @@ func init() {
 	pulumi.RegisterOutputType(ConnectionOriginPtrOutput{})
 	pulumi.RegisterOutputType(ContainerSizeOutput{})
 	pulumi.RegisterOutputType(ContainerSizePtrOutput{})
+	pulumi.RegisterOutputType(CredentialAuthTypeOutput{})
+	pulumi.RegisterOutputType(CredentialAuthTypePtrOutput{})
+	pulumi.RegisterOutputType(CredentialNetworkingTypeOutput{})
+	pulumi.RegisterOutputType(CredentialNetworkingTypePtrOutput{})
 	pulumi.RegisterOutputType(EnvironmentFileTypeOutput{})
 	pulumi.RegisterOutputType(EnvironmentFileTypePtrOutput{})
 	pulumi.RegisterOutputType(EnvironmentSkillTypeOutput{})
@@ -2761,6 +3273,8 @@ func init() {
 	pulumi.RegisterOutputType(TextFormatTypePtrOutput{})
 	pulumi.RegisterOutputType(TextVerbosityOutput{})
 	pulumi.RegisterOutputType(TextVerbosityPtrOutput{})
+	pulumi.RegisterOutputType(TokenEndpointAuthTypeOutput{})
+	pulumi.RegisterOutputType(TokenEndpointAuthTypePtrOutput{})
 	pulumi.RegisterOutputType(ToolTypeOutput{})
 	pulumi.RegisterOutputType(ToolTypePtrOutput{})
 	pulumi.RegisterOutputType(WebSearchContextSizeOutput{})

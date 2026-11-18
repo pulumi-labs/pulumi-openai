@@ -69,7 +69,13 @@ func Provider() p.Provider {
 				"respectSchemaVersion":           true,
 			},
 		}).
-		WithResources(infer.Resource(Agent{}), infer.Resource(PeriodicAutomation{}), infer.Resource(OneTimeAutomation{})).
+		WithResources(
+			infer.Resource(Agent{}),
+			infer.Resource(PeriodicAutomation{}),
+			infer.Resource(OneTimeAutomation{}),
+			infer.Resource(Vault{}),
+			infer.Resource(VaultCredential{}),
+		).
 		WithConfig(infer.Config(&Config{})).
 		WithModuleMap(map[tokens.ModuleName]tokens.ModuleName{
 			"provider": "index",

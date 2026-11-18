@@ -25,6 +25,16 @@ export type Provider = import("./provider").Provider;
 export const Provider: typeof import("./provider").Provider = null as any;
 utilities.lazyLoad(exports, ["Provider"], () => require("./provider"));
 
+export { VaultArgs } from "./vault";
+export type Vault = import("./vault").Vault;
+export const Vault: typeof import("./vault").Vault = null as any;
+utilities.lazyLoad(exports, ["Vault"], () => require("./vault"));
+
+export { VaultCredentialArgs } from "./vaultCredential";
+export type VaultCredential = import("./vaultCredential").VaultCredential;
+export const VaultCredential: typeof import("./vaultCredential").VaultCredential = null as any;
+utilities.lazyLoad(exports, ["VaultCredential"], () => require("./vaultCredential"));
+
 
 // Export enums:
 export * from "./types/enums";
@@ -48,6 +58,10 @@ const _module = {
                 return new OneTimeAutomation(name, <any>undefined, { urn })
             case "openai:index:PeriodicAutomation":
                 return new PeriodicAutomation(name, <any>undefined, { urn })
+            case "openai:index:Vault":
+                return new Vault(name, <any>undefined, { urn })
+            case "openai:index:VaultCredential":
+                return new VaultCredential(name, <any>undefined, { urn })
             default:
                 throw new Error(`unknown resource type ${type}`);
         }

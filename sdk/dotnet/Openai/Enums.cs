@@ -65,6 +65,72 @@ namespace Pulumi.Labs.Openai
     }
 
     [EnumType]
+    public readonly struct CredentialAuthType : IEquatable<CredentialAuthType>
+    {
+        private readonly string _value;
+
+        private CredentialAuthType(string value)
+        {
+            _value = value ?? throw new ArgumentNullException(nameof(value));
+        }
+
+        /// <summary>
+        /// An OAuth access token for an MCP server, optionally refreshed by OpenAI.
+        /// </summary>
+        public static CredentialAuthType McpOAuth { get; } = new CredentialAuthType("mcp_oauth");
+        /// <summary>
+        /// A bearer token for an MCP server.
+        /// </summary>
+        public static CredentialAuthType StaticBearer { get; } = new CredentialAuthType("static_bearer");
+        /// <summary>
+        /// A secret exposed to OpenAI-hosted environments as an environment variable placeholder.
+        /// </summary>
+        public static CredentialAuthType EnvironmentVariable { get; } = new CredentialAuthType("environment_variable");
+
+        public static bool operator ==(CredentialAuthType left, CredentialAuthType right) => left.Equals(right);
+        public static bool operator !=(CredentialAuthType left, CredentialAuthType right) => !left.Equals(right);
+
+        public static explicit operator string(CredentialAuthType value) => value._value;
+
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public override bool Equals(object? obj) => obj is CredentialAuthType other && Equals(other);
+        public bool Equals(CredentialAuthType other) => string.Equals(_value, other._value, StringComparison.Ordinal);
+
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public override int GetHashCode() => _value?.GetHashCode() ?? 0;
+
+        public override string ToString() => _value;
+    }
+
+    [EnumType]
+    public readonly struct CredentialNetworkingType : IEquatable<CredentialNetworkingType>
+    {
+        private readonly string _value;
+
+        private CredentialNetworkingType(string value)
+        {
+            _value = value ?? throw new ArgumentNullException(nameof(value));
+        }
+
+        public static CredentialNetworkingType Limited { get; } = new CredentialNetworkingType("limited");
+        public static CredentialNetworkingType Unrestricted { get; } = new CredentialNetworkingType("unrestricted");
+
+        public static bool operator ==(CredentialNetworkingType left, CredentialNetworkingType right) => left.Equals(right);
+        public static bool operator !=(CredentialNetworkingType left, CredentialNetworkingType right) => !left.Equals(right);
+
+        public static explicit operator string(CredentialNetworkingType value) => value._value;
+
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public override bool Equals(object? obj) => obj is CredentialNetworkingType other && Equals(other);
+        public bool Equals(CredentialNetworkingType other) => string.Equals(_value, other._value, StringComparison.Ordinal);
+
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public override int GetHashCode() => _value?.GetHashCode() ?? 0;
+
+        public override string ToString() => _value;
+    }
+
+    [EnumType]
     public readonly struct EnvironmentFileType : IEquatable<EnvironmentFileType>
     {
         private readonly string _value;
@@ -387,6 +453,35 @@ namespace Pulumi.Labs.Openai
         [EditorBrowsable(EditorBrowsableState.Never)]
         public override bool Equals(object? obj) => obj is TextVerbosity other && Equals(other);
         public bool Equals(TextVerbosity other) => string.Equals(_value, other._value, StringComparison.Ordinal);
+
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public override int GetHashCode() => _value?.GetHashCode() ?? 0;
+
+        public override string ToString() => _value;
+    }
+
+    [EnumType]
+    public readonly struct TokenEndpointAuthType : IEquatable<TokenEndpointAuthType>
+    {
+        private readonly string _value;
+
+        private TokenEndpointAuthType(string value)
+        {
+            _value = value ?? throw new ArgumentNullException(nameof(value));
+        }
+
+        public static TokenEndpointAuthType None { get; } = new TokenEndpointAuthType("none");
+        public static TokenEndpointAuthType ClientSecretBasic { get; } = new TokenEndpointAuthType("client_secret_basic");
+        public static TokenEndpointAuthType ClientSecretPost { get; } = new TokenEndpointAuthType("client_secret_post");
+
+        public static bool operator ==(TokenEndpointAuthType left, TokenEndpointAuthType right) => left.Equals(right);
+        public static bool operator !=(TokenEndpointAuthType left, TokenEndpointAuthType right) => !left.Equals(right);
+
+        public static explicit operator string(TokenEndpointAuthType value) => value._value;
+
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public override bool Equals(object? obj) => obj is TokenEndpointAuthType other && Equals(other);
+        public bool Equals(TokenEndpointAuthType other) => string.Equals(_value, other._value, StringComparison.Ordinal);
 
         [EditorBrowsable(EditorBrowsableState.Never)]
         public override int GetHashCode() => _value?.GetHashCode() ?? 0;

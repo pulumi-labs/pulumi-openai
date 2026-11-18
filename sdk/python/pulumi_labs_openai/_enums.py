@@ -9,6 +9,8 @@ from enum import Enum
 __all__ = [
     'ConnectionOrigin',
     'ContainerSize',
+    'CredentialAuthType',
+    'CredentialNetworkingType',
     'EnvironmentFileType',
     'EnvironmentSkillType',
     'EnvironmentType',
@@ -20,6 +22,7 @@ __all__ = [
     'ServiceTier',
     'TextFormatType',
     'TextVerbosity',
+    'TokenEndpointAuthType',
     'ToolType',
     'WebSearchContextSize',
     'WebSearchMode',
@@ -37,6 +40,28 @@ class ContainerSize(_builtins.str, Enum):
     SMALL = "small"
     MEDIUM = "medium"
     LARGE = "large"
+
+
+@pulumi.type_token("openai:index:CredentialAuthType")
+class CredentialAuthType(_builtins.str, Enum):
+    MCP_O_AUTH = "mcp_oauth"
+    """
+    An OAuth access token for an MCP server, optionally refreshed by OpenAI.
+    """
+    STATIC_BEARER = "static_bearer"
+    """
+    A bearer token for an MCP server.
+    """
+    ENVIRONMENT_VARIABLE = "environment_variable"
+    """
+    A secret exposed to OpenAI-hosted environments as an environment variable placeholder.
+    """
+
+
+@pulumi.type_token("openai:index:CredentialNetworkingType")
+class CredentialNetworkingType(_builtins.str, Enum):
+    LIMITED = "limited"
+    UNRESTRICTED = "unrestricted"
 
 
 @pulumi.type_token("openai:index:EnvironmentFileType")
@@ -125,6 +150,13 @@ class TextVerbosity(_builtins.str, Enum):
     LOW = "low"
     MEDIUM = "medium"
     HIGH = "high"
+
+
+@pulumi.type_token("openai:index:TokenEndpointAuthType")
+class TokenEndpointAuthType(_builtins.str, Enum):
+    NONE = "none"
+    CLIENT_SECRET_BASIC = "client_secret_basic"
+    CLIENT_SECRET_POST = "client_secret_post"
 
 
 @pulumi.type_token("openai:index:ToolType")

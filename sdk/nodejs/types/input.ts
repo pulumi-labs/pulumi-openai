@@ -211,6 +211,97 @@ export interface AutomationTargetArgs {
 }
 
 /**
+ * How a credential authenticates. `type` selects the kind of credential; each other property applies only to the credential types named in its description. Secrets are write-only: the API never returns them, so they are not refreshed.
+ */
+export interface CredentialAuthArgs {
+    /**
+     * `mcp_oauth` credentials: the OAuth access token. Required. Changing it rotates the token in place.
+     */
+    accessToken?: pulumi.Input<string | undefined>;
+    /**
+     * `mcp_oauth` credentials: when the access token expires, as an RFC 3339 timestamp, if known. OpenAI updates the expiry when it refreshes the token; that is not reported as drift.
+     */
+    expiresAt?: pulumi.Input<string | undefined>;
+    /**
+     * `mcp_oauth` and `static_bearer` credentials: the HTTPS URL of the MCP server the credential authorizes. Required. An MCP tool uses the credential whose server URL matches, or the one its `credentialId` names. Changing it replaces the credential.
+     */
+    mcpServerUrl?: pulumi.Input<string | undefined>;
+    /**
+     * `environment_variable` credentials: where the secret may be sent. Required. Changing it replaces the credential.
+     */
+    networking?: pulumi.Input<inputs.CredentialNetworkingArgs | undefined>;
+    /**
+     * `mcp_oauth` credentials: how OpenAI refreshes the access token. When unset, the token is not refreshed. Adding or removing it replaces the credential.
+     */
+    refresh?: pulumi.Input<inputs.CredentialOAuthRefreshArgs | undefined>;
+    /**
+     * `environment_variable` credentials: the name of the environment variable that receives a placeholder for the secret. Required. Use ASCII letters, digits and underscores, starting with a letter or underscore; names starting with `CODEX_` are reserved. It must be unique among the vault's environment variable credentials. Changing it replaces the credential.
+     */
+    secretName?: pulumi.Input<string | undefined>;
+    /**
+     * `environment_variable` credentials: the secret. Required. It must not contain carriage returns, newlines or NUL bytes. Sandbox code only sees a placeholder; OpenAI's egress proxy substitutes the secret in requests to allowed hosts. Changing it rotates the secret in place, for sessions created afterwards.
+     */
+    secretValue?: pulumi.Input<string | undefined>;
+    /**
+     * `static_bearer` credentials: the bearer token, which is not refreshed automatically. Required. Changing it rotates the token in place.
+     */
+    token?: pulumi.Input<string | undefined>;
+    /**
+     * The kind of credential. It cannot be changed: changing it replaces the credential.
+     */
+    type: pulumi.Input<enums.CredentialAuthType>;
+}
+
+export interface CredentialNetworkingArgs {
+    /**
+     * `limited` networking: the hosts the secret may be sent to, 1 to 16 lowercase host names or IPv4 addresses, without a scheme, path, port or wildcard. They must also be allowed by the session's network policy. Required.
+     */
+    allowedHosts?: pulumi.Input<pulumi.Input<string>[] | undefined>;
+    /**
+     * `limited` sends the secret only to `allowedHosts`. `unrestricted` sends it to any host the session's network policy allows, which must then be `restricted` with explicit allowed domains.
+     */
+    type: pulumi.Input<enums.CredentialNetworkingType>;
+}
+
+export interface CredentialOAuthRefreshArgs {
+    /**
+     * The OAuth client ID used to request a new token. Changing it replaces the credential.
+     */
+    clientId: pulumi.Input<string>;
+    /**
+     * The OAuth refresh token. Changing it rotates the token in place.
+     */
+    refreshToken: pulumi.Input<string>;
+    /**
+     * The resource URI sent when refreshing, if the server requires one. Changing it replaces the credential.
+     */
+    resource?: pulumi.Input<string | undefined>;
+    /**
+     * The space-separated OAuth scopes requested when refreshing.
+     */
+    scope?: pulumi.Input<string | undefined>;
+    /**
+     * The HTTPS token endpoint the refresh token is exchanged at. Changing it replaces the credential.
+     */
+    tokenEndpoint: pulumi.Input<string>;
+    /**
+     * How the client authenticates to the token endpoint.
+     */
+    tokenEndpointAuth: pulumi.Input<inputs.CredentialTokenEndpointAuthArgs>;
+}
+
+export interface CredentialTokenEndpointAuthArgs {
+    /**
+     * `client_secret_basic` and `client_secret_post`: the OAuth client secret. Required. Changing it rotates the secret in place.
+     */
+    clientSecret?: pulumi.Input<string | undefined>;
+    /**
+     * How the client authenticates: `none` sends only the client ID, `client_secret_basic` sends the client secret with HTTP Basic authentication, and `client_secret_post` sends it in the request body. Changing it replaces the credential.
+     */
+    type: pulumi.Input<enums.TokenEndpointAuthType>;
+}
+
+/**
  * The execution environment of a session. `type` selects the kind of environment; each other property applies only to the environment types named in its description.
  */
 export interface EnvironmentConfigArgs {

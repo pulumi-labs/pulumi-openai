@@ -108,6 +108,37 @@ func isNotFound(err error) bool {
 	return errors.As(err, &apiErr) && apiErr.StatusCode == http.StatusNotFound
 }
 
+// isConflict reports whether err is an API error with a 409 status.
+func isConflict(err error) bool {
+	var apiErr *apiError
+	return errors.As(err, &apiErr) && apiErr.StatusCode == http.StatusConflict
+}
+
+// How conflicts are retried: the first wait, which doubles each time, and the number of
+// attempts.
+const (
+	conflictRetryDelay = 200 * time.Millisecond
+	conflictAttempts   = 7
+)
+
+// retryConflicts calls fn until it returns anything but a conflict, waiting a little
+// longer each time, for up to about 12 seconds.
+func retryConflicts(ctx context.Context, fn func() error) error {
+	delay := conflictRetryDelay
+	for attempt := 1; ; attempt++ {
+		err := fn()
+		if !isConflict(err) || attempt == conflictAttempts {
+			return err
+		}
+		select {
+		case <-ctx.Done():
+			return ctx.Err()
+		case <-time.After(delay):
+		}
+		delay *= 2
+	}
+}
+
 // do sends a request with an optional JSON body and returns the raw response body.
 func (c *client) do(ctx context.Context, method, path string, body any) ([]byte, error) {
 	var reader io.Reader
