@@ -1,7 +1,14 @@
 {
   "name": "openai",
-  "displayName": "pulumi-provider-openai",
+  "displayName": "OpenAI",
   "description": "A Pulumi provider for managing resources in OpenAI.",
+  "keywords": [
+    "pulumi",
+    "openai",
+    "ai",
+    "agents",
+    "category/utility"
+  ],
   "homepage": "https://www.pulumi.com/openai",
   "license": "Apache-2.0",
   "repository": "https://github.com/pulumi-labs/pulumi-openai",
