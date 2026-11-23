@@ -35,8 +35,10 @@ const description = "A Pulumi provider for managing resources in OpenAI."
 // Provider creates a new instance of the provider.
 func Provider() p.Provider {
 	p, err := infer.NewProviderBuilder().
-		WithDisplayName("pulumi-provider-openai").
+		WithDisplayName("OpenAI").
 		WithDescription(description).
+		// The registry takes the package's category from the "category/" keyword.
+		WithKeywords("pulumi", "openai", "ai", "agents", "category/utility").
 		WithHomepage("https://www.pulumi.com/openai").
 		WithRepository("https://github.com/pulumi-labs/pulumi-openai").
 		WithPublisher("Pulumi Labs").
