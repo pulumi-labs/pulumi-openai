@@ -77,29 +77,31 @@ dotnet add package Pulumi.Labs.Openai
 {{% /choosable %}}
 {{% choosable language java %}}
 
+Replace `VERSION` with the latest version on [Maven Central](https://central.sonatype.com/artifact/com.pulumi.labs/openai).
+
 Maven:
 
 ```xml
 <dependency>
     <groupId>com.pulumi.labs</groupId>
     <artifactId>openai</artifactId>
-    <version>0.3.0</version>
+    <version>VERSION</version>
 </dependency>
 ```
 
 Gradle:
 
 ```groovy
-implementation 'com.pulumi.labs:openai:0.3.0'
+implementation 'com.pulumi.labs:openai:VERSION'
 ```
 
 {{% /choosable %}}
 {{% choosable language yaml %}}
 
-Install the provider plugin from its GitHub release:
+Install the latest provider plugin from its GitHub releases:
 
 ```bash
-pulumi plugin install resource openai 0.3.0 --server github://api.github.com/pulumi-labs/pulumi-openai
+pulumi plugin install resource openai --server github://api.github.com/pulumi-labs/pulumi-openai
 ```
 
 {{% /choosable %}}
